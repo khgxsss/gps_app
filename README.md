@@ -99,3 +99,8 @@ app/build.gradle dependencies
    gradlew.bat clean
 
 ```
+
+# dev 용 keystore 생성
+```
+keytool -list -v -alias androiddebugkey -keystore C:\gps_app\android\app\debug.keystore
+```

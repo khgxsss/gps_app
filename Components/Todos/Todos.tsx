@@ -49,19 +49,18 @@ function Todos() {
     }
 
     return (
-        <>
+        <View>
             <Appbar>
                 <Appbar.Content title={'TODOs List'} />
             </Appbar>
             <FlatList
-                style={{ flex: 1 }}
                 data={todos}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <Todo {...item} />}
             />
             <TextInput label={'New Todo'} value={todo} onChangeText={setTodo} />
             <Button title='Add TODO' onPress={() => addTodo()} />
-        </>
+        </View>
     );
 }
 

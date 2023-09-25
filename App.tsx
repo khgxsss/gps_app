@@ -5,8 +5,7 @@
  * @format
  */
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   AppRegistry,
   SafeAreaView,
@@ -25,6 +24,8 @@ import Icon_MC from 'react-native-vector-icons/MaterialCommunityIcons'
 
 // Components
 import Todos from './Components/Todos/Todos';
+import MapMainComponent from './Components/Maps/main';
+import LoginComponent from './Components/Login/main';
 
 AppRegistry.registerComponent('MyAppName', () => Todos);
 
@@ -40,37 +41,11 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? '#000' : '#fff'
   };
 
+  // 사용자 상태 관리를 위한 useState 사용
+  const [user, setUser] = useState('');
+
   // Tab Status
   const [activeTab, setActiveTab] = React.useState('Home');
-
-  const tabs = [
-    {
-      name: 'Home',
-      activeIcon: <Icon name="home" color="#fff" size={25} />,
-      inactiveIcon: <Icon name="home" color="#949494" size={25} />
-    },
-    {
-      name: 'list',
-      activeIcon: <Icon name="list-ul" color="#fff" size={25} />,
-      inactiveIcon: <Icon name="list-ul" color="#949494" size={25} />
-    },
-    {
-      name: 'Map',
-      activeIcon: <Icon_MC name="ship-wheel" color="#fff" size={25} />,
-      inactiveIcon: <Icon_MC name="ship-wheel" color="#949494" size={25} />
-    },
-    {
-      name: 'Notification',
-      activeIcon: <Icon name="bell" color="#fff" size={25} />,
-      inactiveIcon: <Icon name="bell" color="#949494" size={25} />
-    },
-    {
-      name: 'Profile',
-      activeIcon: <Icon name="user" color="#fff" size={25} />,
-      inactiveIcon: <Icon name="user" color="#949494" size={25} />
-    },
-  
-  ];
 
   // Render Tab
   const renderTabContent = () => {
@@ -78,9 +53,9 @@ function App(): JSX.Element {
       case 'Home':
         return <Text>Home</Text>;
       case 'list':
-        return <Todos />;
+        return <Todos/>;
       case 'Map':
-        return <Text>Map Content</Text>;
+        return <MapMainComponent/>;
       case 'Notification':
         return <Text>Notification Content</Text>;
       case 'Profile':
@@ -96,6 +71,7 @@ function App(): JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
+      <LoginComponent user={user} setUser={setUser}/>
       {renderTabContent()}
       <Tabbar
         tabs={tabs}
@@ -108,6 +84,35 @@ function App(): JSX.Element {
     </SafeAreaView>
   );
 }
+
+const tabs = [
+  {
+    name: 'Home',
+    activeIcon: <Icon name="home" color="#fff" size={25} />,
+    inactiveIcon: <Icon name="home" color="#949494" size={25} />
+  },
+  {
+    name: 'list',
+    activeIcon: <Icon name="list-ul" color="#fff" size={25} />,
+    inactiveIcon: <Icon name="list-ul" color="#949494" size={25} />
+  },
+  {
+    name: 'Map',
+    activeIcon: <Icon_MC name="ship-wheel" color="#fff" size={25} />,
+    inactiveIcon: <Icon_MC name="ship-wheel" color="#949494" size={25} />
+  },
+  {
+    name: 'Notification',
+    activeIcon: <Icon name="bell" color="#fff" size={25} />,
+    inactiveIcon: <Icon name="bell" color="#949494" size={25} />
+  },
+  {
+    name: 'Profile',
+    activeIcon: <Icon name="user" color="#fff" size={25} />,
+    inactiveIcon: <Icon name="user" color="#949494" size={25} />
+  },
+
+];
 
 
 export default App;
