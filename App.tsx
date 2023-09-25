@@ -14,6 +14,7 @@ import {
   StyleSheet,
   Text,
   useColorScheme,
+  PermissionsAndroid,
   View,
 } from 'react-native';
 
@@ -23,13 +24,42 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import Icon_MC from 'react-native-vector-icons/MaterialCommunityIcons'
 
 // Components
-import Todos from './Components/Todos/Todos';
-import MapMainComponent from './Components/Maps/main';
+import Todos from './Components/List/Todos';
+import MapComponent from './Components/Map/main';
 import LoginComponent from './Components/Login/main';
+import ProfileComponent from './Components/Profile/main';
 
 AppRegistry.registerComponent('MyAppName', () => Todos);
 
 function App(): JSX.Element {
+
+  const requestLocationPermission = async () => {
+    try {
+        const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+                title: "위치 권한 필요",
+                message: "이 앱은 위치 권한이 필요합니다.",
+                buttonNeutral: "나중에",
+                buttonNegative: "취소",
+                buttonPositive: "확인"
+            }
+        );
+
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log("permission ok");
+        } else {
+            console.log("permission not ok");
+        }
+    } catch (err) {
+        console.warn(err);
+    }
+  };
+
+  useEffect(()=>{
+    requestLocationPermission();
+  }, []);
+
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -37,8 +67,7 @@ function App(): JSX.Element {
   };
 
   const SAV_style = {
-    flex: 1,
-    backgroundColor: isDarkMode ? '#000' : '#fff'
+    flex: 1
   };
 
   // 사용자 상태 관리를 위한 useState 사용
@@ -50,18 +79,14 @@ function App(): JSX.Element {
   // Render Tab
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'Home':
-        return <Text>Home</Text>;
       case 'list':
         return <Todos/>;
       case 'Map':
-        return <MapMainComponent/>;
-      case 'Notification':
-        return <Text>Notification Content</Text>;
+        return <MapComponent/>;
       case 'Profile':
-        return <Text>Profile Content</Text>;
+        return <ProfileComponent userName={user}/>;
       default:
-        return <Todos />;
+        return <></>;
     }
   };
 
@@ -78,7 +103,7 @@ function App(): JSX.Element {
         tabBarContainerBackground='#b0caff'
         tabBarBackground='#ffffff'
         activeTabBackground='#a0ff99'
-        labelStyle={{ color: '#949494', fontWeight: '600', fontSize: 11 }}
+        labelStyle={{ color: '#949494', fontWeight: '500', fontSize: 12 }}
         onTabChange={(e) => setActiveTab(e.name)}
       />
     </SafeAreaView>
@@ -86,11 +111,6 @@ function App(): JSX.Element {
 }
 
 const tabs = [
-  {
-    name: 'Home',
-    activeIcon: <Icon name="home" color="#fff" size={25} />,
-    inactiveIcon: <Icon name="home" color="#949494" size={25} />
-  },
   {
     name: 'list',
     activeIcon: <Icon name="list-ul" color="#fff" size={25} />,
@@ -100,11 +120,6 @@ const tabs = [
     name: 'Map',
     activeIcon: <Icon_MC name="ship-wheel" color="#fff" size={25} />,
     inactiveIcon: <Icon_MC name="ship-wheel" color="#949494" size={25} />
-  },
-  {
-    name: 'Notification',
-    activeIcon: <Icon name="bell" color="#fff" size={25} />,
-    inactiveIcon: <Icon name="bell" color="#949494" size={25} />
   },
   {
     name: 'Profile',

@@ -122,6 +122,10 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
     implementation project(':react-native-firebaseui-auth')
 
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+
+    implementation project(':react-native-sensors')
+
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.squareup.okhttp3', module:'okhttp'

@@ -29,8 +29,8 @@ const LoginComponent = ({ user, setUser }: { user: any, setUser: any }) => {
   const handleSignIn = async () => {
     try {
       const signedInUser = await Auth.signIn(config);
-      console.log(signedInUser.email)
-      setUser(signedInUser.email)
+      console.log(signedInUser.displayName)
+      setUser(signedInUser.displayName)
     } catch (err) {
       console.log(err);
     }
