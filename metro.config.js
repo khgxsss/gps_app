@@ -6,7 +6,7 @@ const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
  *
  * @type {import('metro-config').MetroConfig}
  */
-// tabbar
+// navigation
 const config = (async () => {
   const {
     resolver: { sourceExts, assetExts }

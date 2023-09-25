@@ -18,44 +18,15 @@ import {
   View,
 } from 'react-native';
 
-// bottom Tabbar
-import Tabbar from './Tabbar/TabBar';
+// bottom Navigation
+import Tabbar from './Navigation/TabBar';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Icon_MC from 'react-native-vector-icons/MaterialCommunityIcons'
 
 // Components
-import Todos from './Todos/Todos';
+import Todos from './Components/Todos/Todos';
 
 AppRegistry.registerComponent('MyAppName', () => Todos);
-
-const tabs = [
-  {
-    name: 'Home',
-    activeIcon: <Icon name="home" color="#fff" size={25} />,
-    inactiveIcon: <Icon name="home" color="#949494" size={25} />
-  },
-  {
-    name: 'list',
-    activeIcon: <Icon name="list-ul" color="#fff" size={25} />,
-    inactiveIcon: <Icon name="list-ul" color="#949494" size={25} />
-  },
-  {
-    name: 'Map',
-    activeIcon: <Icon_MC name="ship-wheel" color="#fff" size={25} />,
-    inactiveIcon: <Icon_MC name="ship-wheel" color="#949494" size={25} />
-  },
-  {
-    name: 'Notification',
-    activeIcon: <Icon name="bell" color="#fff" size={25} />,
-    inactiveIcon: <Icon name="bell" color="#949494" size={25} />
-  },
-  {
-    name: 'Profile',
-    activeIcon: <Icon name="user" color="#fff" size={25} />,
-    inactiveIcon: <Icon name="user" color="#949494" size={25} />
-  },
-
-];
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -69,20 +40,70 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? '#000' : '#fff'
   };
 
+  // Tab Status
+  const [activeTab, setActiveTab] = React.useState('Home');
+
+  const tabs = [
+    {
+      name: 'Home',
+      activeIcon: <Icon name="home" color="#fff" size={25} />,
+      inactiveIcon: <Icon name="home" color="#949494" size={25} />
+    },
+    {
+      name: 'list',
+      activeIcon: <Icon name="list-ul" color="#fff" size={25} />,
+      inactiveIcon: <Icon name="list-ul" color="#949494" size={25} />
+    },
+    {
+      name: 'Map',
+      activeIcon: <Icon_MC name="ship-wheel" color="#fff" size={25} />,
+      inactiveIcon: <Icon_MC name="ship-wheel" color="#949494" size={25} />
+    },
+    {
+      name: 'Notification',
+      activeIcon: <Icon name="bell" color="#fff" size={25} />,
+      inactiveIcon: <Icon name="bell" color="#949494" size={25} />
+    },
+    {
+      name: 'Profile',
+      activeIcon: <Icon name="user" color="#fff" size={25} />,
+      inactiveIcon: <Icon name="user" color="#949494" size={25} />
+    },
+  
+  ];
+
+  // Render Tab
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'Home':
+        return <Text>Home</Text>;
+      case 'list':
+        return <Todos />;
+      case 'Map':
+        return <Text>Map Content</Text>;
+      case 'Notification':
+        return <Text>Notification Content</Text>;
+      case 'Profile':
+        return <Text>Profile Content</Text>;
+      default:
+        return <Todos />;
+    }
+  };
+
   return (
     <SafeAreaView style={SAV_style}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <Todos/>
+      {renderTabContent()}
       <Tabbar
         tabs={tabs}
         tabBarContainerBackground='#b0caff'
         tabBarBackground='#ffffff'
         activeTabBackground='#a0ff99'
         labelStyle={{ color: '#949494', fontWeight: '600', fontSize: 11 }}
-        onTabChange={() => console.log('Tab changed')}
+        onTabChange={(e) => setActiveTab(e.name)}
       />
     </SafeAreaView>
   );

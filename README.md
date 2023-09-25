@@ -68,12 +68,34 @@ You've successfully run and modified your React Native App. :partying_face:
 
 If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
 
-# Learn More
+# More settings for nmap
 
-To learn more about React Native, take a look at the following resources:
+```
+menifest에 application 안에
+   <meta-data
+      android:name="com.naver.maps.map.CLIENT_ID"
+      android:value="1vh7ugorse">
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+android/build.gradle 파일 수정
+   allprojects -> repositories 항목에 다음 내용 추가 확인. 없으면 항목 만들기
+      maven {
+         url 'https://naver.jfrog.io/artifactory/maven/'
+      }
+
+build.gradle:reactive-native-nmap, project build.gradle 파일 수정
+   compilesdkversion 33
+   minsdkversion 30
+   implementation 'com.naver.maps:map-sdk:3.17.0'
+
+app/build.gradle dependencies
+   implementation 'com.naver.maps:map-sdk:3.17.0'
+
+터미널(콘솔)에서 android 디렉터리로 이동
+   cd __내_프로젝트_디렉터리__/android
+   mac/linux이면
+   ./gradlew clean
+
+   windows이면
+   gradlew.bat clean
+
+```
