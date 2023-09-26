@@ -10,7 +10,7 @@ interface TodoType {
     complete: boolean;
 }
 
-function Todos() {
+function Todos({ user, activeTab, setActiveTab }: { user: any, activeTab: any, setActiveTab: any }) {
     const [todo, setTodo] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(true);
     const [todos, setTodos] = useState<TodoType[]>([]);
@@ -49,7 +49,7 @@ function Todos() {
     }
 
     return (
-        <View>
+        <>
             <Appbar>
                 <Appbar.Content title={'TODOs List'} />
             </Appbar>
@@ -60,7 +60,7 @@ function Todos() {
             />
             <TextInput label={'New Todo'} value={todo} onChangeText={setTodo} />
             <Button title='Add TODO' onPress={() => addTodo()} />
-        </View>
+        </>
     );
 }
 

@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-const ProfileComponent = ({userName}:{userName:string}) => {
+const ProfileComponent = ({ user, activeTab, setActiveTab }: { user: any, activeTab: any, setActiveTab: any }) => {
   return (
     <View>
-      <Text>Welcome, {userName}!!</Text>
+      <Text>Welcome, {user}!!</Text>
     </View>
   );
 };

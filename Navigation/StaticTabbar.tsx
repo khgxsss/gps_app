@@ -140,7 +140,7 @@ export default class StaticTabbar extends React.PureComponent<Props> {
                   onTabChange && onTabChange(tab);
                 }}>
                 <Animated.View
-                  style={[styles.tab, {opacity: opacity, zIndex: 100}]}>
+                  style={[styles.tab, {opacity: opacity, zIndex: 2}]}>
                   {tab.inactiveIcon}
                   <Text style={mergeLabelStyle}>{tab.name} </Text>
                 </Animated.View>
@@ -155,7 +155,7 @@ export default class StaticTabbar extends React.PureComponent<Props> {
                   justifyContent: 'center',
                   alignItems: 'center',
                   opacity: opacity1,
-                  zIndex: 50,
+                  zIndex: 1,
                 }}>
                 <View style={newActiveIcon}>{tab.activeIcon}</View>
                 {/* <Text style={mergeLabelStyle}>{tab.name} </Text> */}
