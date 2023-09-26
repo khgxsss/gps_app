@@ -87,6 +87,9 @@ build.gradle:reactive-native-nmap, project build.gradle 파일 수정
    minsdkversion 30
    implementation 'com.naver.maps:map-sdk:3.17.0'
 
+nmap build.gradle
+   'com.android.tools.build:gradle:7.4.2'
+
 app/build.gradle dependencies
    implementation 'com.naver.maps:map-sdk:3.17.0'
 

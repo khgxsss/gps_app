@@ -12,7 +12,7 @@ const LoginComponent = ({ user, setUser }: { user: any, setUser: any }) => {
         console.log(event)
       }
     );
-    // useEffect 내부에서 반환하는 함수는 컴포넌트가 언마운트 될 때 호출됩니다. 
+    // useEffect 내부에서 반환하는 함수는 컴포넌트가 언마운트 될 때 호출됩니다.  
     return () => {
       eventListener.remove(); // Removes the listener
     };

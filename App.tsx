@@ -14,7 +14,6 @@ import {
   StyleSheet,
   Text,
   useColorScheme,
-  PermissionsAndroid,
   View,
 } from 'react-native';
 
@@ -33,33 +32,6 @@ AppRegistry.registerComponent('MyAppName', () => Todos);
 
 function App(): JSX.Element {
 
-  const requestLocationPermission = async () => {
-    try {
-        const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-                title: "위치 권한 필요",
-                message: "이 앱은 위치 권한이 필요합니다.",
-                buttonNeutral: "나중에",
-                buttonNegative: "취소",
-                buttonPositive: "확인"
-            }
-        );
-
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log("permission ok");
-        } else {
-            console.log("permission not ok");
-        }
-    } catch (err) {
-        console.warn(err);
-    }
-  };
-
-  useEffect(()=>{
-    requestLocationPermission();
-  }, []);
-
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -74,7 +46,7 @@ function App(): JSX.Element {
   const [user, setUser] = useState('');
 
   // Tab Status
-  const [activeTab, setActiveTab] = React.useState('Home');
+  const [activeTab, setActiveTab] = React.useState('Map');
 
   // Render Tab
   const renderTabContent = () => {
@@ -86,7 +58,7 @@ function App(): JSX.Element {
       case 'Profile':
         return <ProfileComponent userName={user}/>;
       default:
-        return <></>;
+        return <MapComponent/>;
     }
   };
 
@@ -96,8 +68,12 @@ function App(): JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <LoginComponent user={user} setUser={setUser}/>
-      {renderTabContent()}
+      <View style={{flex: 1,
+        justifyContent: 'flex-end',
+        marginBottom: 65,}}>
+        <LoginComponent user={user} setUser={setUser}/>
+        {renderTabContent()}
+      </View>
       <Tabbar
         tabs={tabs}
         tabBarContainerBackground='#b0caff'
@@ -105,6 +81,7 @@ function App(): JSX.Element {
         activeTabBackground='#a0ff99'
         labelStyle={{ color: '#949494', fontWeight: '500', fontSize: 12 }}
         onTabChange={(e) => setActiveTab(e.name)}
+        defaultActiveTabIndex={1}
       />
     </SafeAreaView>
   );
