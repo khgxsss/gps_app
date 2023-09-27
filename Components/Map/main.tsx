@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import NaverMapView, { Marker } from 'react-native-nmap';
+import NaverMapView, { Marker, Polyline } from 'react-native-nmap';
 import Geolocation from 'react-native-geolocation-service';
 import Icon_MC from 'react-native-vector-icons/MaterialCommunityIcons'
 
@@ -9,10 +9,14 @@ type LocationType = {
     longitude?: number;
 };
 
-const MapComponent = () => {
+type DeviceData = {
+    deviceid: string;
+    location: LocationType;
+};
+
+const MapComponent = ({ mapType, setMapType, MAP_TYPE, patchedData }: { mapType:any, setMapType:any, MAP_TYPE:object, patchedData:DeviceData[] }) => {
     const [location, setLocation] = useState<LocationType>({ latitude: 37.35882350130591, longitude: 127.10469231924353 });
     const [lastTouchTime, setLastTouchTime] = useState<number | null>(null);
-    const [mapType, setMapType] = useState(MAP_TYPE.Basic);
 
     useEffect(() => {
         const watchId = Geolocation.watchPosition(
@@ -53,22 +57,96 @@ const MapComponent = () => {
     const renderUserMarker = () => {
         if (!location) return <></>;
         return (
+            // 사용자 빨간 원 현위치
             <Marker coordinate={location} width={25} height={25}>
                 <Icon_MC name="circle-slice-8" size={25} color="red" />
             </Marker>
         );
     }
 
+    const renderDeviceMarkers = () => {
+        if (!patchedData || patchedData.length === 0) return null;
+
+        return patchedData.map((device: DeviceData) => (
+            <Marker key={device.deviceid} coordinate={device.location} width={35} height={35} >
+                <View style={styles.markerContainer}>
+                    <Icon_MC name="flag" size={35} color="blue" />
+                    <Text style={styles.deviceIdText}>{device.deviceid}</Text>
+                </View>
+            </Marker>
+        ));
+    };
+
+    const renderDistanceLines = () => {
+        if (!location || !patchedData) return null;
+    
+        const userLat = location.latitude!;
+        const userLon = location.longitude!;
+    
+        return patchedData.map((device: DeviceData) => {
+            const deviceLat = device.location.latitude!;
+            const deviceLon = device.location.longitude!;
+            const distance = calculateDistance(userLat, userLon, deviceLat, deviceLon);
+    
+            if (distance <= 3) {  // If distance is less than or equal to 3 km
+                return (
+                    <Polyline
+                        key={`line_${device.deviceid}`}
+                        coordinates={[location, device.location]}
+                        strokeWidth={5}
+                        strokeColor="red"/>
+                );
+            }
+            return null;
+        });
+    };
+
+    const renderDistanceMarkers = () => {
+        if (!location || !patchedData) return null;
+    
+        const userLat = location.latitude!;
+        const userLon = location.longitude!;
+    
+        return patchedData.map((device: DeviceData) => {
+            const deviceLat = device.location.latitude!;
+            const deviceLon = device.location.longitude!;
+            const distance = calculateDistance(userLat, userLon, deviceLat, deviceLon);
+    
+            if (distance <= 3) {  // If distance is less than or equal to 3 km
+                // Calculate the midpoint between user and device
+                const midLat = (userLat + deviceLat) / 2;
+                const midLon = (userLon + deviceLon) / 2;
+    
+                return (
+                    <Marker 
+                        key={`distance_${device.deviceid}`}
+                        coordinate={{latitude: midLat, longitude: midLon}}
+                        anchor={{ x: 0.5, y: 0.5 }}
+                        width={35} height={35}
+                    >
+                        <View style={styles.distanceContainer}>
+                            <Text style={styles.distanceText}>{`${distance.toFixed(3)*1000} m`}</Text>
+                        </View>
+                    </Marker>
+                );
+            }
+            return null;
+        });
+    };
+
     return (
         <>
             <NaverMapView 
                 showsMyLocationButton={false}
                 mapType={mapType}
-                style={{ height:"90%" }}
-                center={{ ...location, zoom: 16 }}
+                style={{ height:"93.5%" }}
+                center={{ ...location, zoom: 13 }}
                 onTouch={handleTouch}
             >
                 {renderUserMarker()}
+                {renderDeviceMarkers()}
+                {renderDistanceLines()}
+                {renderDistanceMarkers()}
             </NaverMapView>
             <View style={styles.buttonContainer}>
                 {Object.entries(MAP_TYPE).map(([key, value]) => (
@@ -103,16 +181,42 @@ const styles = StyleSheet.create({
     buttonText: {
         color: 'white',
         fontWeight: 'bold'
+    },
+    markerContainer: {
+        alignItems: 'center'
+    },
+    deviceIdText: {
+        fontSize: 10,
+        color: 'blue'
+    },
+    distanceContainer: {
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        padding: 2,
+        borderRadius: 3,
+        borderColor: 'gray',
+        borderWidth: 0.5,
+    },
+    distanceText: {
+        fontSize: 10,
+        color: 'black'
     }
 });
 
-const MAP_TYPE = {
-    Basic: 0,
-    TERRAIN: 4,
-    SATELLITE: 2,
-    HYBRID: 3,
-    NAVI: 1
+const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371; // Earth radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+
+    const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c; // Distance in km
+    return d;
 };
+
 
 
 export default MapComponent;
