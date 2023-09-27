@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   StatusBar,
@@ -8,9 +8,8 @@ import {
 } from 'react-native';
 
 import Tabbar from './Navigation/TabBar';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon_MC from 'react-native-vector-icons/MaterialCommunityIcons';
-import Todos from './Components/List/Todos';
+import Todos from './Components/Analytics/Todos';
 import MapComponent from './Components/Map/main';
 import LoginComponent from './Components/Login/main';
 import ProfileComponent from './Components/Profile/main';
@@ -31,7 +30,7 @@ function App(): JSX.Element {
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'List':
+      case 'Analytics':
         return <Todos user={user} activeTab={activeTab} setActiveTab={setActiveTab}/>;
       case 'Map':
         return <MapComponent mapType={mapType} setMapType={setMapType} MAP_TYPE={MAP_TYPE} patchedData={test_data}/>;
@@ -45,9 +44,9 @@ function App(): JSX.Element {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <StatusBar/>
-      <LoginComponent user={user} setUser={setUser} activeTab={activeTab} setActiveTab={setActiveTab} />
+      {/* <LoginComponent user={user} setUser={setUser} activeTab={activeTab} setActiveTab={setActiveTab} /> */}
       {
-        user ? (
+        !user ? (
           <>
             <View style={styles.mainContent}>
               {renderTabContent()}
@@ -71,26 +70,6 @@ function App(): JSX.Element {
   );
 }
 
-// return (
-//   <SafeAreaView style={styles.safeAreaView}>
-//     <StatusBar/>
-//     {/* <WebSocketComponent setPatchedData={setPatchedData}/> */}
-//     <View style={styles.mainContent}>
-//       {renderTabContent()}
-//     </View>
-//     <Tabbar
-//       tabs={tabs}
-//       tabBarContainerBackground='#b0caff'
-//       tabBarBackground='#ffffff'
-//       activeTabBackground='#a0ff99'
-//       labelStyle={styles.labelStyle}
-//       onTabChange={(e) => setActiveTab(e.name)}
-//       defaultActiveTabIndex={1}
-//     />
-//   </SafeAreaView>
-// );
-// }
-
 const styles = StyleSheet.create({
   safeAreaView: {
     height:"100%"
@@ -107,9 +86,9 @@ const styles = StyleSheet.create({
 
 const tabs = [
   {
-    name: 'List',
-    activeIcon: <Icon name="list-ul" color="#fff" size={25} />,
-    inactiveIcon: <Icon name="list-ul" color="#949494" size={25} />,
+    name: 'Analytics',
+    activeIcon: <Icon_MC name="google-analytics" color="#fff" size={25} />,
+    inactiveIcon: <Icon_MC name="google-analytics" color="#949494" size={25} />,
   },
   {
     name: 'Map',
@@ -118,8 +97,8 @@ const tabs = [
   },
   {
     name: 'Profile',
-    activeIcon: <Icon name="user" color="#fff" size={25} />,
-    inactiveIcon: <Icon name="user" color="#949494" size={25} />,
+    activeIcon: <Icon_MC name="account-details" color="#fff" size={25} />,
+    inactiveIcon: <Icon_MC name="account-details" color="#949494" size={25} />,
   },
 ];
 

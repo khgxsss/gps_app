@@ -151,7 +151,7 @@ export default class StaticTabbar extends React.PureComponent<Props> {
                   top: -8,
                   left: tabWidth * key,
                   width: tabWidth,
-                  height: 64,
+                  height: "100%",
                   justifyContent: 'center',
                   alignItems: 'center',
                   opacity: opacity1,
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    height: 64,
+    height: "100%",
   },
   activeIcon: {
     width: 60,
