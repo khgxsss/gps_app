@@ -3,6 +3,7 @@ import { Button, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import NaverMapView, { Marker, Polyline } from 'react-native-nmap';
 import Geolocation from 'react-native-geolocation-service';
 import Icon_MC from 'react-native-vector-icons/MaterialCommunityIcons'
+import { ScrollView } from 'react-native/Libraries/Components/ScrollView/ScrollView';
 
 type LocationType = {
     latitude?: number;
@@ -135,7 +136,7 @@ const MapComponent = ({ mapType, setMapType, MAP_TYPE, patchedData }: { mapType:
     };
 
     return (
-        <>
+        <View style={styles.allContainer}>
             <NaverMapView 
                 showsMyLocationButton={false}
                 mapType={mapType}
@@ -159,15 +160,17 @@ const MapComponent = ({ mapType, setMapType, MAP_TYPE, patchedData }: { mapType:
                     </TouchableOpacity>
                 ))}
             </View>
-        </>
+        </View>
     );
 };
 const styles = StyleSheet.create({
+    allContainer: {
+        height:'100%'
+    },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingHorizontal: 10,
-        paddingBottom: 20
+        paddingHorizontal: 10
     },
     button: {
         flex: 1,

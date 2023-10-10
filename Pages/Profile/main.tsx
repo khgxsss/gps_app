@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-import PostCard from '../../components/PostCard';
 import { useAuth } from '../../Navigation/AuthContext';
+import PostCard from '../../Components/PostCard';
 
 interface deviceType {
   id: string;
@@ -31,8 +31,6 @@ const ProfileComponent = () => {
   const [deleted, setDeleted] = useState(false);
   const [userData, setUserData] = useState<FirebaseFirestoreTypes.DocumentData|undefined>({});
   const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE } = useAuth();
-
-  setUser('kdh13')
 
   const fetchDevices = async () => {
     try {
@@ -120,13 +118,6 @@ const ProfileComponent = () => {
       {userData ? userData.about || 'No details added.' : ''}
       </Text>
       <View style={styles.userBtnWrapper}>
-        <TouchableOpacity
-          style={styles.userBtn}
-          onPress={() => {
-            console.log("ProfileEdit Ã¢À¸·Î")
-          }}>
-          <Text style={styles.userBtnTxt}>Edit</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={styles.userBtn} onPress={() => handleSignOut()}>
           <Text style={styles.userBtnTxt}>Logout</Text>
         </TouchableOpacity>
@@ -135,15 +126,11 @@ const ProfileComponent = () => {
       <View style={styles.userInfoWrapper}>
         <View style={styles.userInfoItem}>
           <Text style={styles.userInfoTitle}>{devices.length}</Text>
-          <Text style={styles.userInfoSubTitle}>Posts</Text>
-        </View>
-        <View style={styles.userInfoItem}>
-          <Text style={styles.userInfoTitle}>10,000</Text>
-          <Text style={styles.userInfoSubTitle}>Followers</Text>
+          <Text style={styles.userInfoSubTitle}>Total Devices</Text>
         </View>
         <View style={styles.userInfoItem}>
           <Text style={styles.userInfoTitle}>100</Text>
-          <Text style={styles.userInfoSubTitle}>Following</Text>
+          <Text style={styles.userInfoSubTitle}>Online Devices</Text>
         </View>
       </View>
 
@@ -157,8 +144,7 @@ const ProfileComponent = () => {
 const styles = StyleSheet.create({
   container: {
     height: '100%',
-    backgroundColor: '#fff',
-    padding: 20,
+    padding: '15%'
   },
   userImg: {
     height: 150,

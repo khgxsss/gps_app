@@ -70,7 +70,8 @@ function App(): JSX.Element {
 
 const styles = StyleSheet.create({
   safeAreaView: {
-    height:"100%"
+    height:"100%",
+    backgroundColor: '#fff'
   },
   mainContent: {
     marginBottom: 65
