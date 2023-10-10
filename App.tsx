@@ -7,13 +7,15 @@ import {
   View,
 } from 'react-native';
 
+import { AuthProvider, useAuth } from './Navigation/AuthContext';
+
 import Tabbar from './Navigation/TabBar';
 import Icon_MC from 'react-native-vector-icons/MaterialCommunityIcons';
-import Todos from './Components/Analytics/Todos';
-import MapComponent from './Components/Map/main';
-import LoginComponent from './Components/Login/main';
-import ProfileComponent from './Components/Profile/main';
-import WebSocketComponent from './Components/Websocket/main';
+import Todos from './Pages/Analytics/Todos';
+import MapComponent from './Pages/Map/main';
+import LoginComponent from './Pages/Login/main';
+import ProfileComponent from './Pages/Profile/main';
+import WebSocketComponent from './components/Websocket/main';
 
 const test_data = [
   { deviceid: "40ca63fffe1deca5", location: { latitude: 36.4383755, longitude: 127.4248978 } },
@@ -23,10 +25,7 @@ const test_data = [
 
 function App(): JSX.Element {
 
-  const [user, setUser] = useState('');
-  const [activeTab, setActiveTab] = React.useState('Map');
-  const [patchedData, setPatchedData] = React.useState<object>({});
-  const [mapType, setMapType] = useState(MAP_TYPE.Basic); // used in MapComponent
+  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE } = useAuth();
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -35,7 +34,7 @@ function App(): JSX.Element {
       case 'Map':
         return <MapComponent mapType={mapType} setMapType={setMapType} MAP_TYPE={MAP_TYPE} patchedData={test_data}/>;
       case 'Profile':
-        return <ProfileComponent user={user} activeTab={activeTab} setActiveTab={setActiveTab}/>;
+        return <ProfileComponent/>;
       default:
         return <></>;
     }
@@ -44,9 +43,9 @@ function App(): JSX.Element {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <StatusBar/>
-      {/* <LoginComponent user={user} setUser={setUser} activeTab={activeTab} setActiveTab={setActiveTab} /> */}
+      <LoginComponent/>
       {
-        !user ? (
+        user ? (
           <>
             <View style={styles.mainContent}>
               {renderTabContent()}
@@ -64,7 +63,6 @@ function App(): JSX.Element {
         ):(
           <></>
         )
-        
       }
     </SafeAreaView>
   );
@@ -102,12 +100,14 @@ const tabs = [
   },
 ];
 
-const MAP_TYPE = {
-  Basic: 0,
-  TERRAIN: 4,
-  SATELLITE: 2,
-  HYBRID: 3,
-  NAVI: 1
+
+
+const AppWrapper = () => {
+  return (
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  );
 };
 
-export default App;
+export default AppWrapper;
