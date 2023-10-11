@@ -151,9 +151,10 @@ const MapComponent = ({ mapType, setMapType, MAP_TYPE, patchedData }: { mapType:
             </NaverMapView>
             <View style={styles.buttonContainer}>
                 {Object.entries(MAP_TYPE).map(([key, value]) => (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         key={key} 
                         style={styles.button}
+                        color='#81daf7'
                         onPress={() => setMapType(value)}
                     >
                         <Text style={styles.buttonText}>{key}</Text>

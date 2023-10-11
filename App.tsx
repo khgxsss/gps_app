@@ -16,6 +16,8 @@ import MapComponent from './Pages/Map/main';
 import LoginComponent from './Pages/Login/main';
 import ProfileComponent from './Pages/Profile/main';
 import WebSocketComponent from './components/Websocket/main';
+import { Block, GalioProvider } from 'galio-framework';
+import { Images, products, materialTheme } from "./constants/";
 
 const test_data = [
   { deviceid: "40ca63fffe1deca5", location: { latitude: 36.4383755, longitude: 127.4248978 } },
@@ -30,7 +32,7 @@ function App(): JSX.Element {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Analytics':
-        return <Todos user={user} activeTab={activeTab} setActiveTab={setActiveTab}/>;
+        return <Todos user={user.displayName} activeTab={activeTab} setActiveTab={setActiveTab}/>;
       case 'Map':
         return <MapComponent mapType={mapType} setMapType={setMapType} MAP_TYPE={MAP_TYPE} patchedData={test_data}/>;
       case 'Profile':
@@ -42,28 +44,32 @@ function App(): JSX.Element {
 // Login dev용으로 전환
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <StatusBar/>
-      <LoginComponent/>
-      {
-        user ? (
-          <>
-            <View style={styles.mainContent}>
-              {renderTabContent()}
-            </View>
-            <Tabbar
-              tabs={tabs}
-              tabBarContainerBackground='#b0caff'
-              tabBarBackground='#ffffff'
-              activeTabBackground='#a0ff99'
-              labelStyle={styles.labelStyle}
-              onTabChange={(e) => setActiveTab(e.name)}
-              defaultActiveTabIndex={1}
-            />
-          </>
-        ):(
-          <></>
-        )
-      }
+      <GalioProvider theme={materialTheme}>
+      <Block flex>
+        <StatusBar/>
+        <LoginComponent/>
+        {
+          user.uid ? (
+            <>
+              <View style={styles.mainContent}>
+                {renderTabContent()}
+              </View>
+              <Tabbar
+                tabs={tabs}
+                tabBarContainerBackground='#b0caff'
+                tabBarBackground='#ffffff'
+                activeTabBackground='#a0ff99'
+                labelStyle={styles.labelStyle}
+                onTabChange={(e) => setActiveTab(e.name)}
+                defaultActiveTabIndex={1}
+              />
+            </>
+          ):(
+            <></>
+          )
+        }
+      </Block>
+      </GalioProvider>
     </SafeAreaView>
   );
 }
@@ -74,7 +80,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   mainContent: {
-    marginBottom: 65
+    marginBottom: 70
   },
   labelStyle: {
     color: '#949494',

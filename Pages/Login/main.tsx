@@ -7,7 +7,7 @@ import Font from "./constants/font";
 const LoginComponent = () => {
 
   const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE } = useAuth();
-  if (!user) {
+  if (!user.uid) {
     return (
       <View style={styles.container}>
         <View
