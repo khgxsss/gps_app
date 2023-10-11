@@ -50,7 +50,7 @@ const Done = ({...props}) => (
 
 const OnboardingScreen = () => {
 
-    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE } = useAuth();
+    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory } = useAuth();
     return (
         <Onboarding
         SkipButtonComponent={Skip}

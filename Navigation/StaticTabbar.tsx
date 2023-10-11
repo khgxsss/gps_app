@@ -8,7 +8,10 @@ import {
   Text,
   TextStyle,
   I18nManager,
+  BackHandler,
+  Alert,
 } from 'react-native';
+import { useAuth } from './AuthContext';
 
 import { TabsType } from './TabBar';
 let { width } = Dimensions.get('window');
@@ -25,6 +28,10 @@ interface Props {
   transitionSpeed?: number;
 }
 
+const mapNameForIndex = (i:number) => {
+  return i === 0 ? 'Analytics' : i === 1 ? 'Map' : 'Profile'
+}
+
 const StaticTabbar: React.FC<Props> = ({
   value,
   tabs,
@@ -32,12 +39,12 @@ const StaticTabbar: React.FC<Props> = ({
   labelStyle,
   activeTabBackground,
   containerWidth,
-  defaultActiveTabIndex = 0,
+  defaultActiveTabIndex = 1,
   transitionSpeed,
 }) => {
   const valuesRef = useRef(
     tabs.map((tab, index) => 
-      new Animated.Value(index === defaultActiveTabIndex ? 1 : 0)
+      new Animated.Value(index === defaultActiveTabIndex ? 1 : 1)
     )
   );
   
@@ -45,9 +52,49 @@ const StaticTabbar: React.FC<Props> = ({
 
   const transitionDuration = transitionSpeed || null;
 
+  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory } = useAuth();
+
   useEffect(() => {
     onPress(defaultActiveTabIndex, true);
   }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      if (tabHistory.length > 1) {
+        const newHistory = [...tabHistory];
+        newHistory.pop();
+        const prevTab = newHistory[newHistory.length - 1];
+        onPress(prevTab, true);
+        setActiveTab(mapNameForIndex(prevTab));
+        setTabHistory(newHistory);
+        return true; // 이벤트를 소비하여 앱이 종료되지 않게 합니다.
+      }else {
+        // 탭 히스토리에 1개 이하의 항목이 있을 때 사용자에게 앱을 종료할 것인지 물어봅니다.
+        Alert.alert(
+            "Exit App",
+            "Do you want to exit the app?",
+            [
+                {
+                    text: "No",
+                    onPress: () => null,
+                    style: "cancel"
+                },
+                {
+                    text: "Yes",
+                    onPress: () => BackHandler.exitApp()
+                }
+            ],
+            { cancelable: true }
+        );
+        return true;
+      }
+    };
+
+    // 물리 백 버튼을 눌렀을 때 backAction을 호출합니다.
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () => backHandler.remove();
+  }, [tabHistory]);
 
   const range = (start: number, end: number) => {
     var len = end - start;
@@ -87,6 +134,7 @@ const StaticTabbar: React.FC<Props> = ({
       ]).start();
 
       setPrevIndex(index);
+      setTabHistory((prev:number[]) => [...prev, index]);
     }
   };
 

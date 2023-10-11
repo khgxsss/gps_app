@@ -14,6 +14,8 @@ interface AuthContextType {
     handleSignIn: () => void;
     handleSignOut: () => void;
     MAP_TYPE: object;
+    tabHistory: number[];
+    setTabHistory:(value: number[]) => void;
 }
 
 interface AuthProviderProps {
@@ -37,6 +39,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   const [activeTab, setActiveTab] = React.useState('Map');
   const [mapType, setMapType] = useState(MAP_TYPE.Basic); // used in MapComponent
   const [fetchedWData, setFetchedWData] = React.useState<object>({});
+  const [tabHistory, setTabHistory] = useState<number[]>([1])
 
   useEffect(() => {
     const eventListener = AuthEventEmitter.addListener(
@@ -126,7 +129,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE }}>
+    <AuthContext.Provider value={{ activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory }}>
       {children}
     </AuthContext.Provider>
   );

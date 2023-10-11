@@ -43,7 +43,7 @@ const PostCard: React.FC<PostCardProps> = ({item, onDelete, onPress, userData}) 
 
   const likeIcon = item.online ? 'heart' : 'heart-outline';
   const likeIconColor = item.online ? '#2e64e5' : '#333';
-  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE } = useAuth();
+  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory } = useAuth();
 
   return (
     <Card key={item.id}>

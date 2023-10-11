@@ -27,7 +27,7 @@ const ProfileComponent = () => {
   const [devices, setDevices] = useState<deviceType[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
-  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE } = useAuth();
+  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory } = useAuth();
 
   const fetchDevices = async () => {
     try {
@@ -133,7 +133,7 @@ const ProfileComponent = () => {
       <Block style={styles.options}>
         <Block row space="between" style={{ padding: theme.SIZES?.BASE, }}>
           <Block middle>
-            <Text bold size={13} style={{marginBottom: 8}}>36</Text>
+            <Text bold size={13} color={theme.COLORS?.BLACK} style={{marginBottom: 8}}>36</Text>
             <Text muted size={13}>Total Devices</Text>
           </Block>
           <Block middle>
@@ -142,7 +142,7 @@ const ProfileComponent = () => {
           </Block>
         </Block>
         <Block row space="between" style={{ marginTop: 16,paddingVertical: 16, alignItems: 'baseline' }}>
-          <Text size={16}>Recently viewed</Text>
+          <Text size={16} color={theme.COLORS?.BLACK}>Recently viewed</Text>
           <Button style={{backgroundColor:theme.COLORS?.MUTED, width:'auto', height:'auto'}} onPress={()=>{handleSignOut()}}>Logout</Button>
           <Text size={12} color={theme.COLORS?.PRIMARY} onPress={() => console.log('home')}>View All</Text>
         </Block>
@@ -168,58 +168,58 @@ const styles = StyleSheet.create({
     height:'100%'
   },
   profileImage: {
-    width: width,
+    width: '100%',
     height: '100%',
   },
   profileContainer: {
-    width: width,
+    width: '100%',
     height: '50%',
   },
   profileDetails: {
-    paddingTop: theme.SIZES.BASE * 4,
+    paddingTop: theme?.SIZES?.BASE ? theme.SIZES.BASE * 4 : 0,
     justifyContent: 'flex-end',
-    paddingBottom: theme.SIZES.BASE * 6
+    paddingBottom: theme?.SIZES?.BASE ? theme.SIZES.BASE * 6 : 0,
   },
   userImgBlock: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: -theme.SIZES.BASE*13,
+    marginBottom: theme?.SIZES?.BASE ? -theme.SIZES.BASE*13 : 0,
     zIndex:3
   },
   userImg: {
-    height: 200,
-    width: 200,
-    borderRadius: 100
+    height: width*0.35,
+    width: width*0.35,
+    borderRadius: 10000
   },
   profileTexts: {
-    paddingHorizontal: theme.SIZES.BASE * 2,
-    paddingVertical: theme.SIZES.BASE * 2,
+    paddingHorizontal: theme?.SIZES?.BASE ? theme.SIZES.BASE * 2 : 0,
+    paddingVertical: theme?.SIZES?.BASE ? theme.SIZES.BASE * 2 : 0,
     zIndex: 3
   },
   pro: {
     backgroundColor: materialTheme.COLORS.LABEL,
     paddingHorizontal: 6,
-    marginRight: theme.SIZES.BASE / 2,
+    marginRight: theme?.SIZES?.BASE ? theme.SIZES.BASE / 2 : 0,
     borderRadius: 4
   },
   seller: {
-    marginRight: theme.SIZES.BASE / 2,
+    marginRight: theme?.SIZES?.BASE ? theme.SIZES.BASE / 2 : 0,
   },
   options: {
-    padding: theme.SIZES.BASE,
-    marginHorizontal: theme.SIZES.BASE,
-    marginTop: -theme.SIZES.BASE * 7,
+    padding: theme?.SIZES?.BASE ? theme.SIZES.BASE : 0,
+    marginHorizontal: theme?.SIZES?.BASE ? theme.SIZES.BASE : 0,
+    marginTop: theme?.SIZES?.BASE ? -theme.SIZES.BASE * 7 : 0,
     borderTopLeftRadius: 13,
     borderTopRightRadius: 13,
     borderBottomLeftRadius: 13,
     borderBottomRightRadius: 13,
-    backgroundColor: '#fff',
+    backgroundColor: '#f0f0f0',
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 0 },
     shadowRadius: 8,
     shadowOpacity: 0.2,
     zIndex: 2,
-    height:'65%'
+    marginBottom:80
   },
   thumb: {
     borderRadius: 4,
