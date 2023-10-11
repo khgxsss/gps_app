@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,9 +10,8 @@ import {
   I18nManager,
 } from 'react-native';
 
-import {TabsType} from './TabBar';
-let {width} = Dimensions.get('window');
-var prevIndex = -1;
+import { TabsType } from './TabBar';
+let { width } = Dimensions.get('window');
 
 interface Props {
   value?: Animated.AnimatedValue;
@@ -26,147 +25,132 @@ interface Props {
   transitionSpeed?: number;
 }
 
-export default class StaticTabbar extends React.PureComponent<Props> {
-  values: Array<Animated.AnimatedValue>;
-  transitionDuration = this.props.transitionSpeed
-    ? this.props.transitionSpeed
-    : null;
-  activeTabIndex = this.props.defaultActiveTabIndex
-    ? this.props.defaultActiveTabIndex > this.props.tabs.length
-      ? 0
-      : this.props.defaultActiveTabIndex
-    : 0;
+const StaticTabbar: React.FC<Props> = ({
+  value,
+  tabs,
+  onTabChange,
+  labelStyle,
+  activeTabBackground,
+  containerWidth,
+  defaultActiveTabIndex = 0,
+  transitionSpeed,
+}) => {
+  const valuesRef = useRef(
+    tabs.map((tab, index) => 
+      new Animated.Value(index === defaultActiveTabIndex ? 1 : 0)
+    )
+  );
+  
+  const [prevIndex, setPrevIndex] = useState(-1);
 
-  constructor(props: Props) {
-    super(props);
-    const {tabs} = this.props;
-    const {activeTabIndex} = this;
+  const transitionDuration = transitionSpeed || null;
 
-    this.values = tabs?.map(
-      (tab, index) => new Animated.Value(index === activeTabIndex ? 1 : 0),
-    );
-  }
+  useEffect(() => {
+    onPress(defaultActiveTabIndex, true);
+  }, []);
 
-  componentDidMount() {
-    const {activeTabIndex} = this;
-    this.onPress(activeTabIndex, true);
-  }
-
-  //RTL SUPORT
-  range(start:number, end:number) {
+  const range = (start: number, end: number) => {
     var len = end - start;
     var a = new Array(len);
     for (let i = 0; i < len; i++) a[i] = start + i;
     return a;
-  }
+  };
 
-  onPress = (index: number, noAnimation: boolean = false) => {
+  const onPress = (index: number, noAnimation: boolean = false) => {
     if (prevIndex !== index) {
-      const {value, tabs, containerWidth} = this.props;
-      const {transitionDuration} = this;
-      let customWidth = containerWidth ? containerWidth : width;
+      const customWidth = containerWidth || width;
       const tabWidth = customWidth / tabs.length;
-      let rangeNumber = this.range(0, tabs.length).reverse();
+      let rangeNumber = range(0, tabs.length).reverse();
 
       Animated.sequence([
         Animated.parallel(
-          this.values.map(
-            (v: Animated.AnimatedValue | Animated.AnimatedValueXY) =>
-              Animated.timing(v, {
-                toValue: 0,
-                useNativeDriver: true,
-                duration: noAnimation ? 0 : 50,
-              }),
-          ),
+          valuesRef.current.map((v) =>
+            Animated.timing(v, {
+              toValue: 0,
+              useNativeDriver: true,
+              duration: noAnimation ? 0 : 50,
+            })
+          )
         ),
-        Animated.timing(value, {
+        Animated.timing(value!, {
           toValue: I18nManager.isRTL
             ? customWidth + tabWidth * rangeNumber[index]
             : tabWidth * index,
           useNativeDriver: true,
-          duration: noAnimation ? 0 : transitionDuration,
+          duration: noAnimation ? 0 : transitionDuration!,
         }),
-        Animated.timing(this.values[index], {
+        Animated.timing(valuesRef.current[index], {
           toValue: 1,
           useNativeDriver: true,
           duration: 750,
         }),
       ]).start();
-      prevIndex = index;
+
+      setPrevIndex(index);
     }
   };
 
-  render() {
-    const {onPress} = this;
-    const {
-      tabs,
-      value,
-      activeTabBackground,
-      labelStyle,
-      onTabChange,
-      containerWidth,
-    } = this.props;
-    let customWidth = containerWidth ? containerWidth : width;
-    let mergeLabelStyle = {...styles.labelStyle, ...labelStyle};
-    let newActiveIcon = [
-      styles.activeIcon,
-      {backgroundColor: activeTabBackground ? activeTabBackground : '#fff'},
-    ];
-    return (
-      <View style={styles.container}>
-        {tabs.map((tab, key) => {
-          const tabWidth = customWidth / tabs.length;
-          let rangeNumber = this.range(0, tabs.length).reverse();
-          const cursor = I18nManager.isRTL
-            ? customWidth + tabWidth * rangeNumber[key]
-            : tabWidth * key;
+  let mergeLabelStyle = { ...styles.labelStyle, ...labelStyle };
+  let newActiveIcon = [
+    styles.activeIcon,
+    { backgroundColor: activeTabBackground || '#fff' },
+  ];
 
-          const opacity = value.interpolate({
-            inputRange: [cursor - tabWidth, cursor, cursor + tabWidth],
-            outputRange: [1, 0, 1],
-            extrapolate: 'clamp',
-          });
+  return (
+    <View style={styles.container}>
+      {tabs.map((tab, key) => {
+        const customWidth = containerWidth || width;
+        const tabWidth = customWidth / tabs.length;
+        let rangeNumber = range(0, tabs.length).reverse();
+        const cursor = I18nManager.isRTL
+          ? customWidth + tabWidth * rangeNumber[key]
+          : tabWidth * key;
 
-          const opacity1 = this.values[key].interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 1],
-            extrapolate: 'clamp',
-          });
-          return (
-            <React.Fragment {...{key}}>
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  onPress(key);
-                  onTabChange && onTabChange(tab);
-                }}>
-                <Animated.View
-                  style={[styles.tab, {opacity: opacity, zIndex: 2}]}>
-                  {tab.inactiveIcon}
-                  <Text style={mergeLabelStyle}>{tab.name} </Text>
-                </Animated.View>
-              </TouchableWithoutFeedback>
-              <Animated.View
-                style={{
-                  position: 'absolute',
-                  top: -8,
-                  left: tabWidth * key,
-                  width: tabWidth,
-                  height: "100%",
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  opacity: opacity1,
-                  zIndex: 1,
-                }}>
-                <View style={newActiveIcon}>{tab.activeIcon}</View>
-                {/* <Text style={mergeLabelStyle}>{tab.name} </Text> */}
+        const opacity = value!.interpolate({
+          inputRange: [cursor - tabWidth, cursor, cursor + tabWidth],
+          outputRange: [1, 0, 1],
+          extrapolate: 'clamp',
+        });
+
+        const opacity1 = valuesRef.current[key].interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, 1],
+          extrapolate: 'clamp',
+        });
+        return (
+          <React.Fragment key={key}>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                onPress(key);
+                onTabChange && onTabChange(tab);
+              }}
+            >
+              <Animated.View style={[styles.tab, { opacity, zIndex: 2 }]}>
+                {tab.inactiveIcon}
+                <Text style={mergeLabelStyle}>{tab.name} </Text>
               </Animated.View>
-            </React.Fragment>
-          );
-        })}
-      </View>
-    );
-  }
-}
+            </TouchableWithoutFeedback>
+            <Animated.View
+              style={{
+                position: 'absolute',
+                top: -8,
+                left: tabWidth * key,
+                width: tabWidth,
+                height: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+                opacity: opacity1,
+                zIndex: 1,
+              }}
+            >
+              <View style={newActiveIcon}>{tab.activeIcon}</View>
+            </Animated.View>
+          </React.Fragment>
+        );
+      })}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -176,7 +160,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    height: "100%",
+    height: '100%',
   },
   activeIcon: {
     width: 60,
@@ -189,7 +173,8 @@ const styles = StyleSheet.create({
   labelStyle: {
     fontSize: 11,
     fontWeight: '600',
-    // marginTop: 3,
     color: '#000',
   },
 });
+
+export default StaticTabbar;

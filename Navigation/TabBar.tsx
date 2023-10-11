@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,16 +13,19 @@ import Svg, { Path } from "react-native-svg";
 import StaticTabbar from "./StaticTabbar";
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
-// let width = 390;
 let { width } = Dimensions.get("window");
 const height = 65;
 
-const getPath = (tabWidth: number, width: number, totalTab: number) => {
+interface Point {
+  x: number;
+  y: number;
+}
 
+const getPath = (tabWidth: number, width: number, totalTab: number): string => {
   const tab = shape
-    .line<string>()
-    .x((d) => d.x)
-    .y((d) => d.y)
+    .line<Point>()
+    .x((d: Point) => d.x)
+    .y((d: Point) => d.y)
     .curve(shape.curveBasis)([
     { x: width + tabWidth / 2 - 100, y: 0 },
     { x: width + tabWidth / 2 - 65 + -35, y: 0 },
@@ -60,61 +63,79 @@ interface Props {
   transitionSpeed?: number;
 }
 
-export default class Tabbar extends React.PureComponent<Props> {
-  value = new Animated.Value(0);
+const Tabbar: React.FC<Props> = (props) => {
+  const [value] = useState(new Animated.Value(0));
 
-  render() {
-    const {
-      tabs,
-      containerTopRightRadius,
-      tabBarBackground,
-      tabBarContainerBackground,
-      containerBottomSpace,
-      containerWidth,
-      containerTopLeftRadius,
-      containerBottomLeftRadius,
-      containerBottomRightRadius,
-    } = this.props;
-    let CustomWidth = containerWidth ? containerWidth : width;
-    const { value } = this;
-    const translateX = value.interpolate({
-      inputRange: [0, CustomWidth],
-      outputRange: [-CustomWidth, 0],
-    });
-    let tabBarBackgroundColor = tabBarBackground
-      ? tabBarBackground
-      : "transparent";
-    const tabWidth: number | void | string =
-      tabs.length > 0
-        ? CustomWidth / tabs.length
-        : console.error("please add tab data");
-    let d;
-    if (typeof tabWidth == "number") {
-      d = getPath(tabWidth, CustomWidth, tabs.length);
-    }
+  const {
+    tabs,
+    containerTopRightRadius,
+    tabBarBackground,
+    tabBarContainerBackground,
+    containerBottomSpace,
+    containerWidth,
+    containerTopLeftRadius,
+    containerBottomLeftRadius,
+    containerBottomRightRadius,
+  } = props;
 
-    let borderTopRightRadius = containerTopRightRadius
-      ? containerTopRightRadius
-      : 0;
-    let borderTopLeftRadius = containerTopLeftRadius
-      ? containerTopLeftRadius
-      : 0;
-    let borderBottomLeftRadius = containerBottomLeftRadius
-      ? containerBottomLeftRadius
-      : 0;
-    let borderBottomRightRadius = containerBottomRightRadius
-      ? containerBottomRightRadius
-      : 0;
-    if (tabs.length > 0) {
-      return (
-        <>
+  let CustomWidth = containerWidth ? containerWidth : width;
+
+  const translateX = value.interpolate({
+    inputRange: [0, CustomWidth],
+    outputRange: [-CustomWidth, 0],
+  });
+
+  let tabBarBackgroundColor = tabBarBackground
+    ? tabBarBackground
+    : "transparent";
+
+  const tabWidth: number | void | string =
+    tabs.length > 0
+      ? CustomWidth / tabs.length
+      : console.error("please add tab data");
+
+  let d;
+  if (typeof tabWidth == "number") {
+    d = getPath(tabWidth, CustomWidth, tabs.length);
+  }
+
+  let borderTopRightRadius = containerTopRightRadius
+    ? containerTopRightRadius
+    : 0;
+  let borderTopLeftRadius = containerTopLeftRadius
+    ? containerTopLeftRadius
+    : 0;
+  let borderBottomLeftRadius = containerBottomLeftRadius
+    ? containerBottomLeftRadius
+    : 0;
+  let borderBottomRightRadius = containerBottomRightRadius
+    ? containerBottomRightRadius
+    : 0;
+
+  if (tabs.length > 0) {
+    return (
+      <>
+        <View
+          style={{
+            backgroundColor: tabBarContainerBackground
+              ? tabBarContainerBackground
+              : "#fff",
+            position: "absolute",
+            bottom: containerBottomSpace ? containerBottomSpace : 0,
+            alignSelf: "center",
+            borderTopRightRadius,
+            borderTopLeftRadius,
+            borderBottomLeftRadius,
+            borderBottomRightRadius,
+          }}
+        >
           <View
-            style={{
+            {...{
+              height,
+              width: CustomWidth,
               backgroundColor: tabBarContainerBackground
                 ? tabBarContainerBackground
                 : "#fff",
-              position: "absolute",
-              bottom: containerBottomSpace ? containerBottomSpace : 0,
               alignSelf: "center",
               borderTopRightRadius,
               borderTopLeftRadius,
@@ -122,54 +143,39 @@ export default class Tabbar extends React.PureComponent<Props> {
               borderBottomRightRadius,
             }}
           >
-            <View
-              {...{
-                height,
-                width: CustomWidth,
-                backgroundColor: tabBarContainerBackground
-                  ? tabBarContainerBackground
-                  : "#fff",
-                alignSelf: "center",
-                borderTopRightRadius,
-                borderTopLeftRadius,
-                borderBottomLeftRadius,
-                borderBottomRightRadius,
+            <AnimatedSvg
+              width={CustomWidth * 2}
+              {...{ height }}
+              style={{
+                transform: [{ translateX }],
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              <AnimatedSvg
-                width={CustomWidth * 2}
-                {...{ height }}
-                style={{
-                  transform: [{ translateX }],
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Path fill={tabBarBackgroundColor} {...{ d }} />
-              </AnimatedSvg>
-              <View style={StyleSheet.absoluteFill}>
-                <StaticTabbar {...this.props} {...{ tabs, value }} />
-              </View>
+              <Path fill={tabBarBackgroundColor} {...{ d }} />
+            </AnimatedSvg>
+            <View style={StyleSheet.absoluteFill}>
+              <StaticTabbar {...props} {...{ tabs, value }} />
             </View>
-            <SafeAreaView
-              style={{
-                alignSelf: "center",
-                borderBottomLeftRadius,
-                borderBottomRightRadius,
-              }}
-            />
           </View>
-        </>
-      );
-    } else {
-      return (
-        <View style={styles.emptyContainer}>
-          <Text>Please add tab data</Text>
+          <SafeAreaView
+            style={{
+              alignSelf: "center",
+              borderBottomLeftRadius,
+              borderBottomRightRadius,
+            }}
+          />
         </View>
-      );
-    }
+      </>
+    );
+  } else {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text>Please add tab data</Text>
+      </View>
+    );
   }
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -177,3 +183,5 @@ const styles = StyleSheet.create({
   },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
 });
+
+export default Tabbar;
