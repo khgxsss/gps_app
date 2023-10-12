@@ -7,33 +7,29 @@ import {
   View,
 } from 'react-native';
 
-import { AuthProvider, useAuth } from './Navigation/AuthContext';
+import { AuthProvider, height, useAuth } from './Navigation/AuthContext';
 
 import Tabbar from './Navigation/TabBar';
-import Icon_MC from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons } from './components/IconSets';
 import Todos from './Pages/Analytics/Todos';
 import MapComponent from './Pages/Map/main';
 import LoginComponent from './Pages/Login/main';
 import ProfileComponent from './Pages/Profile/main';
 import WebSocketComponent from './components/Websocket/main';
 import { Block, GalioProvider } from 'galio-framework';
-import { Images, products, materialTheme } from "./constants/";
+import { Images, materialTheme } from "./constants/";
+import Theme from './constants/Theme';
 
-const test_data = [
-  { deviceid: "40ca63fffe1deca5", location: { latitude: 36.4383755, longitude: 127.4248978 } },
-  { deviceid: "40ca63fffe1deca6", location: { latitude: 36.4335753, longitude: 127.4028976 } },
-  { deviceid: "40ca63fffe1deca7", location: { latitude: 36.4235753, longitude: 127.4428976 } }
-]
 function App(): JSX.Element {
 
   const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory } = useAuth();
-
+  
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Analytics':
         return <Todos user={user.displayName} activeTab={activeTab} setActiveTab={setActiveTab}/>;
       case 'Map':
-        return <MapComponent mapType={mapType} setMapType={setMapType} MAP_TYPE={MAP_TYPE} patchedData={test_data}/>;
+        return <MapComponent/>;
       case 'Profile':
         return <ProfileComponent/>;
       default:
@@ -44,7 +40,6 @@ function App(): JSX.Element {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <GalioProvider theme={materialTheme}>
-      <Block flex>
         <StatusBar/>
         <LoginComponent/>
         {
@@ -55,9 +50,9 @@ function App(): JSX.Element {
               </View>
               <Tabbar
                 tabs={tabs}
-                tabBarContainerBackground='#b0caff'
-                tabBarBackground='#ffffff'
-                activeTabBackground='#a0ff99'
+                tabBarContainerBackground={Theme.COLORS.SECONDARY}
+                tabBarBackground={Theme.COLORS.WHITE}
+                activeTabBackground={Theme.COLORS.PRIMARY}
                 labelStyle={styles.labelStyle}
                 onTabChange={(e) => setActiveTab(e.name)}
                 defaultActiveTabIndex={1}
@@ -67,7 +62,6 @@ function App(): JSX.Element {
             <></>
           )
         }
-      </Block>
       </GalioProvider>
     </SafeAreaView>
   );
@@ -79,7 +73,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   mainContent: {
-    marginBottom: 70
+    height: height-57
   },
   labelStyle: {
     color: '#949494',
@@ -91,18 +85,18 @@ const styles = StyleSheet.create({
 const tabs = [
   {
     name: 'Analytics',
-    activeIcon: <Icon_MC name="google-analytics" color="#fff" size={25} />,
-    inactiveIcon: <Icon_MC name="google-analytics" color="#949494" size={25} />,
+    activeIcon: <MaterialCommunityIcons name="google-analytics" color={Theme.COLORS.WHITE} size={25} />,
+    inactiveIcon: <MaterialCommunityIcons name="google-analytics" color="#949494" size={25} />,
   },
   {
     name: 'Map',
-    activeIcon: <Icon_MC name="ship-wheel" color="#fff" size={25} />,
-    inactiveIcon: <Icon_MC name="ship-wheel" color="#949494" size={25} />,
+    activeIcon: <MaterialCommunityIcons name="ship-wheel" color={Theme.COLORS.WHITE} size={25} />,
+    inactiveIcon: <MaterialCommunityIcons name="ship-wheel" color="#949494" size={25} />,
   },
   {
     name: 'Profile',
-    activeIcon: <Icon_MC name="account-details" color="#fff" size={25} />,
-    inactiveIcon: <Icon_MC name="account-details" color="#949494" size={25} />,
+    activeIcon: <MaterialCommunityIcons name="account-details" color={Theme.COLORS.WHITE} size={25} />,
+    inactiveIcon: <MaterialCommunityIcons name="account-details" color="#949494" size={25} />,
   },
 ];
 

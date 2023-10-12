@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Button, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import NaverMapView, { Marker, Polyline } from 'react-native-nmap';
 import Geolocation from 'react-native-geolocation-service';
-import Icon_MC from 'react-native-vector-icons/MaterialCommunityIcons'
-import { ScrollView } from 'react-native/Libraries/Components/ScrollView/ScrollView';
+import { MaterialCommunityIcons } from '../../components/IconSets';
+import ActionButton from 'react-native-action-button-fork1';
+import { useAuth } from '../../Navigation/AuthContext';
+import Theme from '../../constants/Theme';
 
 type LocationType = {
     latitude?: number;
@@ -15,17 +17,18 @@ type DeviceData = {
     location: LocationType;
 };
 
-const MapComponent = ({ mapType, setMapType, MAP_TYPE, patchedData }: { mapType:any, setMapType:any, MAP_TYPE:object, patchedData:DeviceData[] }) => {
+const MapComponent = () => {
     const [location, setLocation] = useState<LocationType>({ latitude: 37.35882350130591, longitude: 127.10469231924353 });
     const [lastTouchTime, setLastTouchTime] = useState<number | null>(null);
+    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory } = useAuth();
 
     useEffect(() => {
         const watchId = Geolocation.watchPosition(
             position => {
                 const { latitude, longitude } = position.coords;
 
-                // 사용자가 마지막으로 지도를 터치한 시점에서 2초가 지나지 않았다면 위치를 업데이트 하지 않는다.
-                if (lastTouchTime && Date.now() - lastTouchTime < 2000) {
+                // 사용자가 마지막으로 지도를 터치한 시점에서 2.5초가 지나지 않았다면 위치를 업데이트 하지 않는다.
+                if (lastTouchTime && Date.now() - lastTouchTime < 2500) {
                     return;
                 }
 
@@ -60,18 +63,18 @@ const MapComponent = ({ mapType, setMapType, MAP_TYPE, patchedData }: { mapType:
         return (
             // 사용자 빨간 원 현위치
             <Marker coordinate={location} width={25} height={25}>
-                <Icon_MC name="circle-slice-8" size={25} color="red" />
+                <MaterialCommunityIcons name="circle-slice-8" size={25} color="red" />
             </Marker>
         );
     }
 
     const renderDeviceMarkers = () => {
-        if (!patchedData || patchedData.length === 0) return null;
+        if (!fetchedWData || fetchedWData.length === 0) return null;
 
-        return patchedData.map((device: DeviceData) => (
+        return fetchedWData.map((device: DeviceData) => (
             <Marker key={device.deviceid} coordinate={device.location} width={35} height={35} >
                 <View style={styles.markerContainer}>
-                    <Icon_MC name="flag" size={35} color="blue" />
+                    <MaterialCommunityIcons name="flag" size={35} color="#9418db" />
                     <Text style={styles.deviceIdText}>{device.deviceid}</Text>
                 </View>
             </Marker>
@@ -79,12 +82,12 @@ const MapComponent = ({ mapType, setMapType, MAP_TYPE, patchedData }: { mapType:
     };
 
     const renderDistanceLines = () => {
-        if (!location || !patchedData) return null;
+        if (!location || !fetchedWData) return null;
     
         const userLat = location.latitude!;
         const userLon = location.longitude!;
     
-        return patchedData.map((device: DeviceData) => {
+        return fetchedWData.map((device: DeviceData) => {
             const deviceLat = device.location.latitude!;
             const deviceLon = device.location.longitude!;
             const distance = calculateDistance(userLat, userLon, deviceLat, deviceLon);
@@ -95,7 +98,7 @@ const MapComponent = ({ mapType, setMapType, MAP_TYPE, patchedData }: { mapType:
                         key={`line_${device.deviceid}`}
                         coordinates={[location, device.location]}
                         strokeWidth={5}
-                        strokeColor="red"/>
+                        strokeColor="#ff641c"/>
                 );
             }
             return null;
@@ -103,12 +106,12 @@ const MapComponent = ({ mapType, setMapType, MAP_TYPE, patchedData }: { mapType:
     };
 
     const renderDistanceMarkers = () => {
-        if (!location || !patchedData) return null;
+        if (!location || !fetchedWData) return null;
     
         const userLat = location.latitude!;
         const userLon = location.longitude!;
     
-        return patchedData.map((device: DeviceData) => {
+        return fetchedWData.map((device: DeviceData) => {
             const deviceLat = device.location.latitude!;
             const deviceLon = device.location.longitude!;
             const distance = calculateDistance(userLat, userLon, deviceLat, deviceLon);
@@ -143,48 +146,26 @@ const MapComponent = ({ mapType, setMapType, MAP_TYPE, patchedData }: { mapType:
                 style={{ height:"93.5%" }}
                 center={{ ...location, zoom: 13 }}
                 onTouch={handleTouch}
+                onCameraChange={handleTouch}
             >
                 {renderUserMarker()}
                 {renderDeviceMarkers()}
                 {renderDistanceLines()}
                 {renderDistanceMarkers()}
             </NaverMapView>
-            <View style={styles.buttonContainer}>
+                <ActionButton buttonColor={Theme.COLORS.LABEL} style={styles.actionButton} >
                 {Object.entries(MAP_TYPE).map(([key, value]) => (
-                    <TouchableOpacity
-                        key={key} 
-                        style={styles.button}
-                        color='#81daf7'
-                        onPress={() => setMapType(value)}
-                    >
-                        <Text style={styles.buttonText}>{key}</Text>
-                    </TouchableOpacity>
+                    <ActionButton.Item buttonColor={Theme.COLORS.BUTTON_COLOR} title={key} key={key} onPress={() => setMapType(value)}>
+                        <MaterialCommunityIcons name="map-legend" color={'#fff'} size={25}/>
+                    </ActionButton.Item>
                 ))}
-            </View>
+                </ActionButton>
         </View>
     );
 };
 const styles = StyleSheet.create({
     allContainer: {
         height:'100%'
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 10
-    },
-    button: {
-        flex: 1,
-        margin: 5,
-        padding: 10,
-        backgroundColor: '#4285f4',
-        borderRadius: 5,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    buttonText: {
-        color: 'white',
-        fontWeight: 'bold'
     },
     markerContainer: {
         alignItems: 'center'
@@ -198,11 +179,15 @@ const styles = StyleSheet.create({
         padding: 2,
         borderRadius: 3,
         borderColor: 'gray',
-        borderWidth: 0.5,
+        borderWidth: 0.5
     },
     distanceText: {
         fontSize: 10,
         color: 'black'
+    },
+    actionButton: {
+        position:'absolute',
+        marginBottom: 80
     }
 });
 

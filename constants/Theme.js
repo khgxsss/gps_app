@@ -16,10 +16,11 @@ export default {
     SWITCH_OFF: '#D4D9DD',
     GRADIENT_START: '#6B24AA',
     GRADIENT_END: '#AC2688',
-    PRICE_COLOR: '#EAD5FB',
+    SECONDARY: '#EAD5FB',
     BORDER_COLOR: '#E7E7E7',
     BLOCK: '#E7E7E7',
     ICON: '#4A4A4A',
+    WHITE: '#fff'
   },
   SIZES: {
     BLOCK_SHADOW_RADIUS: 2,

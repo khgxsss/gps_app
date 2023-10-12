@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Text } from "react-native";
+import { StyleSheet, View, Image, TouchableOpacity, Text, ImageBackground } from "react-native";
+import Theme from '../../constants/Theme';
 import { useAuth } from '../../Navigation/AuthContext';
-import Color from "./constants/color";
-import Font from "./constants/font";
 
 const LoginComponent = () => {
 
@@ -10,15 +9,10 @@ const LoginComponent = () => {
   if (!user.uid) {
     return (
       <View style={styles.container}>
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Image source={require("./images/ic_homepage.png")} />
-        </View>
-        <View style={{ padding: 50 }}>
+        <ImageBackground
+          source={ require('../../assets/images/startpage.png') }
+          style={{height:'100%'}}>
+        <View style={{ padding: 50,height:'100%', justifyContent:'center', marginTop:'40%'}}>
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={() => {
@@ -36,6 +30,7 @@ const LoginComponent = () => {
             <Text style={styles.buttonText}>SIGN UP</Text>
           </TouchableOpacity>
         </View>
+        </ImageBackground>
       </View>
     );
   } else{
@@ -48,24 +43,16 @@ const LoginComponent = () => {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: Color.white,
-    justifyContent: "center"
   },
   buttonContainer: {
-    backgroundColor: Color.primary,
+    backgroundColor: Theme.COLORS?.SUCCESS,
     padding: 15,
     borderRadius: 50,
     alignItems: "center",
     marginTop: 20,
   },
   buttonText: {
-    color: Color.white,
-    fontFamily: Font.FONT_SEMI_BOLD,
+    color: Theme.COLORS?.WHITE,
     fontSize: 20,
   },
 });

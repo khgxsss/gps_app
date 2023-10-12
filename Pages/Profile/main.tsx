@@ -2,17 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Dimensions, ScrollView, Image, ImageBackground, Platform, View } from 'react-native';
 import { Block, Button, Text, theme } from 'galio-framework';
 import LinearGradient from 'react-native-linear-gradient';
-import Icon_FA from 'react-native-vector-icons/FontAwesome';
+import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../components/IconSets';
 
-import { Icon } from '../../components';
 import { Images, materialTheme } from '../../constants';
-import { HeaderHeight } from "../../constants/utils";
-
-const { width, height } = Dimensions.get('screen');
-const thumbMeasure = (width - 48 - 32) / 3;
 
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-import { useAuth } from '../../Navigation/AuthContext';
+import { height, useAuth, width } from '../../Navigation/AuthContext';
+import ActionButton from 'react-native-action-button-fork1';
+import Theme from '../../constants/Theme';
+import SyncModalComponent from './syncModal';
+
+const thumbMeasure = (width - 48 - 32) / 3;
 
 interface deviceType {
   userId: string;
@@ -26,7 +26,8 @@ interface deviceType {
 const ProfileComponent = () => {
   const [devices, setDevices] = useState<deviceType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [deleted, setDeleted] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+
   const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory } = useAuth();
 
   const fetchDevices = async () => {
@@ -98,19 +99,19 @@ const ProfileComponent = () => {
   }
 
   return (
-    <Block style={styles.profile}>
+    <View style={styles.profile}>
       <ImageBackground
         source={ Images.Profile }
         style={styles.profileContainer}
         imageStyle={styles.profileImage}>
         <Block flex style={styles.profileDetails}>
+          <Block style={styles.profileTexts}>
           <Block style = {styles.userImgBlock}>
             <Image
               style={styles.userImg}
               source={{uri: user.photoURL ? user.photoURL : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
             />
           </Block>
-          <Block style={styles.profileTexts}>
           <Text color="white" size={28} style={{ paddingBottom: 8 }}>{user.displayName}</Text>
               <Block row space="between">
                 <Block row>
@@ -120,9 +121,9 @@ const ProfileComponent = () => {
                   <Text color="white" size={16} muted style={styles.seller}>User</Text>
                 </Block>
                 <Block>
-                  <Text color={theme.COLORS?.MUTED} size={16}>
-                    <Icon_FA name="map-marker" color={theme.COLORS?.MUTED} size={16} />
-                    {` `} Seoul, KR
+                  <Text color={theme.COLORS?.NEUTRAL} size={16}>
+                    <FontAwesome name="map-marker" color={theme.COLORS?.NEUTRAL} size={16} />
+                    {` `} KR
                     </Text>
                 </Block>
               </Block>
@@ -142,38 +143,42 @@ const ProfileComponent = () => {
           </Block>
         </Block>
         <Block row space="between" style={{ marginTop: 16,paddingVertical: 16, alignItems: 'baseline' }}>
-          <Text size={16} color={theme.COLORS?.BLACK}>Recently viewed</Text>
-          <Button style={{backgroundColor:theme.COLORS?.MUTED, width:'auto', height:'auto'}} onPress={()=>{handleSignOut()}}>Logout</Button>
+          <Text size={16} color={theme.COLORS?.BLACK}>Recently updated (24hours)</Text>
           <Text size={12} color={theme.COLORS?.PRIMARY} onPress={() => console.log('home')}>View All</Text>
         </Block>
+        <View style={styles.optionLine} />
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Block row space="between" style={{ flexWrap: 'wrap' }} >
-            {devices.map((device, imgIndex) => (
-              <>
-              <Text
-                key={`key-${device}`}
-                style={styles.thumb}>{device.device}</Text>
-              </>
+          <Block row >
+            {devices.map((device, Index) => (
+              <Block key={Index} style={styles.textContainer}>
+                <Text style={styles.thumb}>{device.device}</Text>
+              </Block>
             ))}
           </Block>
         </ScrollView>
       </Block>
-    </Block>
+      <ActionButton buttonColor={Theme.COLORS.LABEL} style={styles.actionButton} renderIcon={active => (<Ionicons name="settings-sharp" color={theme.COLORS?.WHITE} size={25}/>)}>
+        <ActionButton.Item buttonColor='#9b59b6' title='Sync with thingplug' onPress={() => setModalVisible(true)}>
+            <MaterialCommunityIcons name="sync" color={'#fff'} size={25}/>
+        </ActionButton.Item>
+        <ActionButton.Item buttonColor='#9b59b6' title='Logout' onPress={()=>{handleSignOut()}}>
+            <MaterialCommunityIcons name="logout" color={'#fff'} size={25}/>
+        </ActionButton.Item>
+      </ActionButton>
+      <SyncModalComponent isModalVisible={isModalVisible} setModalVisible={setModalVisible}/>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   profile: {
-    marginBottom: -HeaderHeight,
     height:'100%'
   },
   profileImage: {
-    width: '100%',
     height: '100%',
   },
   profileContainer: {
-    width: '100%',
-    height: '50%',
+    height: '40%',
   },
   profileDetails: {
     paddingTop: theme?.SIZES?.BASE ? theme.SIZES.BASE * 4 : 0,
@@ -181,15 +186,13 @@ const styles = StyleSheet.create({
     paddingBottom: theme?.SIZES?.BASE ? theme.SIZES.BASE * 6 : 0,
   },
   userImgBlock: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: theme?.SIZES?.BASE ? -theme.SIZES.BASE*13 : 0,
-    zIndex:3
+    justifyContent:'center',
+    alignItems: 'center'
   },
   userImg: {
-    height: width*0.35,
-    width: width*0.35,
-    borderRadius: 10000
+    width: 100,
+    height: 100,
+    borderRadius: 50
   },
   profileTexts: {
     paddingHorizontal: theme?.SIZES?.BASE ? theme.SIZES.BASE * 2 : 0,
@@ -206,6 +209,7 @@ const styles = StyleSheet.create({
     marginRight: theme?.SIZES?.BASE ? theme.SIZES.BASE / 2 : 0,
   },
   options: {
+    position:'relative',
     padding: theme?.SIZES?.BASE ? theme.SIZES.BASE : 0,
     marginHorizontal: theme?.SIZES?.BASE ? theme.SIZES.BASE : 0,
     marginTop: theme?.SIZES?.BASE ? -theme.SIZES.BASE * 7 : 0,
@@ -219,14 +223,34 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOpacity: 0.2,
     zIndex: 2,
-    marginBottom:80
+    height: '60%'
   },
-  thumb: {
+  optionLine: { 
+    height: 1, 
+    backgroundColor: '#fff', 
+    marginBottom:10
+  },
+  textContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 4,
     marginVertical: 4,
-    alignSelf: 'center',
-    width: thumbMeasure,
-    height: thumbMeasure
+    padding: 20,
+    marginTop: 10,
+    margin: 10,
+    marginBottom: 10,
+    backgroundColor:Theme.COLORS.SWITCH_ON,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 8,
+    shadowOpacity: 0.2,
+    opacity: 0.9,
+    borderBlockColor: 'black',
+    borderColor: 'black',
+    borderWidth: 2
+  },
+  thumb: {
+    color:theme.COLORS?.WHITE
   },
   gradient: {
     zIndex: 3,
@@ -236,6 +260,11 @@ const styles = StyleSheet.create({
     height: '30%',
     position: 'absolute',
   },
+  actionButton: {
+    position:'absolute',
+    marginBottom: 80,
+    zIndex: 3
+  }
 });
 
 export default ProfileComponent;

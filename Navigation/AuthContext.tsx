@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import Auth, { AuthEventEmitter, AuthEvents, User } from 'react-native-firebaseui-auth';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import { Dimensions } from 'react-native';
 
 interface AuthContextType {
     activeTab: string;
@@ -9,8 +10,8 @@ interface AuthContextType {
     setMapType: (value: number) => void;
     user: User;
     setUser: (value: User) => void;
-    fetchedWData: object;
-    setFetchedWData: (value: object) => void;
+    fetchedWData: object[];
+    setFetchedWData: (value: object[]) => void;
     handleSignIn: () => void;
     handleSignOut: () => void;
     MAP_TYPE: object;
@@ -30,7 +31,15 @@ const MAP_TYPE = {
     NAVI: 1
 };
 
+// only for dev
+const test_data = [
+  { deviceid: "40ca63fffe1deca5", location: { latitude: 36.4383755, longitude: 127.4248978 } },
+  { deviceid: "40ca63fffe1deca6", location: { latitude: 36.4335753, longitude: 127.4028976 } },
+  { deviceid: "40ca63fffe1deca7", location: { latitude: 36.4235753, longitude: 127.4428976 } }
+]
+
 const default_user = {displayName:'',email:'',isNewUser:false,phoneNumber:'',photoURL:'',uid:'',providerId:'',creationTimestamp:0,lastSignInTimestamp:0}
+export const { width, height } = Dimensions.get('screen');
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -38,7 +47,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   const [user, setUser] = useState<User>(default_user);
   const [activeTab, setActiveTab] = React.useState('Map');
   const [mapType, setMapType] = useState(MAP_TYPE.Basic); // used in MapComponent
-  const [fetchedWData, setFetchedWData] = React.useState<object>({});
+  const [fetchedWData, setFetchedWData] = React.useState<object[]>(test_data);
   const [tabHistory, setTabHistory] = useState<number[]>([1])
 
   useEffect(() => {
