@@ -30,7 +30,7 @@ const SyncModalComponent = ({isModalVisible, setModalVisible}) => {
             >
                 <View style={styles.modalView}>
                 <Text>API 연동 작업을 여기서 진행하세요.</Text>
-                <Button onPress={() => setModalVisible(false)}>닫기</Button>
+                <Button onPress={() => setModalVisible(false)}>close</Button>
                 </View>
             </TouchableOpacity>
         </Modal>
@@ -45,7 +45,8 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0,0,0,0.5)", // 반투명한 회색 배경
     },
       modalView: {
-        width: "80%",
+        width: "90%",
+        height: "90%",
         padding: 20,
         backgroundColor: "white",
         borderRadius: 10,
