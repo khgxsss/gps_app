@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Dimensions, ScrollView, Image, ImageBackground, Platform, View } from 'react-native';
 import { Block, Button, Text, theme } from 'galio-framework';
 import LinearGradient from 'react-native-linear-gradient';
-import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../components/IconSets';
+import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../Components/IconSets';
 
 import { Images, materialTheme } from '../../constants';
 
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import { height, useAuth, width } from '../../Navigation/AuthContext';
 import ActionButton from 'react-native-action-button-fork1';
-import Theme from '../../constants/Theme';
+import Theme from '../../Constants/Theme';
 import SyncModalComponent from './syncModal';
 
 const thumbMeasure = (width - 48 - 32) / 3;

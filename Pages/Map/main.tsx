@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Button, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import NaverMapView, { Marker, Polyline } from 'react-native-nmap';
+import NaverMapView, { Marker, Polyline } from 'react-native-nmap-fork1';
 import Geolocation from 'react-native-geolocation-service';
-import { MaterialCommunityIcons } from '../../components/IconSets';
+import { MaterialCommunityIcons } from '../../Components/IconSets';
 import ActionButton from 'react-native-action-button-fork1';
 import { useAuth } from '../../Navigation/AuthContext';
-import Theme from '../../constants/Theme';
+import Theme from '../../Constants/Theme';
 
 type LocationType = {
     latitude?: number;

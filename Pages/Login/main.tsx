@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, Text, ImageBackground } from "react-native";
-import Theme from '../../constants/Theme';
+import Theme from '../../Constants/Theme';
 import { useAuth } from '../../Navigation/AuthContext';
 
 const LoginComponent = () => {

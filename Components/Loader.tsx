@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Dimensions, ScrollView, Image, ImageBackground, Platform, View, Modal, TouchableOpacity, TextInput, Text, Button} from 'react-native';
 
-import Theme from '../constants/Theme';
+import Theme from '../Constants/Theme';
 
 import ProgressCircle from 'react-native-progress/Circle';
 

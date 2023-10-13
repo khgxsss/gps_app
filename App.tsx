@@ -10,15 +10,15 @@ import {
 import { AuthProvider, height, useAuth } from './Navigation/AuthContext';
 
 import Tabbar from './Navigation/TabBar';
-import { MaterialCommunityIcons } from './components/IconSets';
+import { MaterialCommunityIcons } from './Components/IconSets';
 import Todos from './Pages/Analytics/Todos';
 import MapComponent from './Pages/Map/main';
 import LoginComponent from './Pages/Login/main';
 import ProfileComponent from './Pages/Profile/main';
-import WebSocketComponent from './components/Websocket/main';
+import WebSocketComponent from './Components/Websocket/main';
 import { Block, GalioProvider } from 'galio-framework';
-import { Images, materialTheme } from "./constants/";
-import Theme from './constants/Theme';
+import { Images, materialTheme } from "./Constants/";
+import Theme from './Constants/Theme';
 
 function App(): JSX.Element {
 

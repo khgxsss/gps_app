@@ -8,11 +8,11 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
-import FormButton from '../components/FormButton';
+import FormButton from '../Components/FormButton';
 import {AuthContext} from '../navigation/AuthProvider';
 
 import firestore from '@react-native-firebase/firestore';
-import PostCard from '../components/PostCard';
+import PostCard from '../Components/PostCard';
 
 const ProfileScreen = ({navigation, route}) => {
   const {user, logout} = useContext(AuthContext);
