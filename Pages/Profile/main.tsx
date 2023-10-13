@@ -26,9 +26,8 @@ interface deviceType {
 const ProfileComponent = () => {
   const [devices, setDevices] = useState<deviceType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalVisible, setModalVisible] = useState(false);
 
-  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory } = useAuth();
+  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isModalVisible, setModalVisible  } = useAuth();
 
   const fetchDevices = async () => {
     try {
@@ -158,14 +157,14 @@ const ProfileComponent = () => {
         </ScrollView>
       </Block>
       <ActionButton buttonColor={Theme.COLORS.LABEL} style={styles.actionButton} renderIcon={active => (<Ionicons name="settings-sharp" color={theme.COLORS?.WHITE} size={25}/>)}>
-        <ActionButton.Item buttonColor='#9b59b6' title='Sync with thingplug' onPress={() => setModalVisible(true)}>
-            <MaterialCommunityIcons name="sync" color={'#fff'} size={25}/>
+        <ActionButton.Item buttonColor='#9b59b6' title='Wifi Settings' onPress={() => setModalVisible(true)}>
+            <MaterialCommunityIcons name="wifi-cog" color={'#fff'} size={25}/>
         </ActionButton.Item>
         <ActionButton.Item buttonColor='#9b59b6' title='Logout' onPress={()=>{handleSignOut()}}>
             <MaterialCommunityIcons name="logout" color={'#fff'} size={25}/>
         </ActionButton.Item>
       </ActionButton>
-      <SyncModalComponent isModalVisible={isModalVisible} setModalVisible={setModalVisible}/>
+      <SyncModalComponent/>
     </View>
   );
 };
