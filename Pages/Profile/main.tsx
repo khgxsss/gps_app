@@ -8,7 +8,7 @@ import { componentHeight, height, useAuth, width } from '../../Navigation/AuthCo
 import ActionButton from 'react-native-action-button-fork1';
 import Theme from '../../Constants/Theme';
 import SyncModalComponent from './syncModal';
-import Images from '../../constants/Images';
+import Images from '../../Constants/Images';
 
 const thumbMeasure = (width - 48 - 32) / 3;
 
@@ -106,7 +106,7 @@ const ProfileComponent = () => {
           <View style = {styles.userImgBlock}>
             <Image
               style={styles.userImg}
-              source={{uri: user.photoURL ? user.photoURL : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
+              source={{uri: user.photoURL ? user.photoURL : Images.googleBasicProfile}}
             />
           </View>
           <Text style={{ paddingBottom: 8, fontSize:28, color:Theme.COLORS.WHITE }}>{user.displayName}</Text>

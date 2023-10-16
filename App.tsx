@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo";
-import { MaterialCommunityIcons } from './components/IconSets';
+import { MaterialCommunityIcons } from './Components/IconSets';
 
 import { AuthProvider, componentHeight, useAuth } from './Navigation/AuthContext';
 import IntentLauncher from 'react-native-intent-launcher-fork1';
@@ -21,9 +21,9 @@ import Todos from './Pages/Analytics/Todos';
 import MapComponent from './Pages/Map/main';
 import LoginComponent from './Pages/Login/main';
 import ProfileComponent from './Pages/Profile/main';
-import WebSocketComponent from './components/Websocket/main';
-import Theme from './constants/Theme';
-import LoaderComponent from './components/Loader';
+import WebSocketComponent from './Components/Websocket/main';
+import Theme from './Constants/Theme';
+import LoaderComponent from './Components/Loader';
 
 function App(): JSX.Element {
 

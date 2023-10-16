@@ -3,7 +3,7 @@ const Pro = 'https://images.unsplash.com/photo-1485796826113-174aa68fd81b?fit=cr
 
 const Profile = require('../assets/images/ProfileBG.jpg');
 const Avatar = 'https://images.unsplash.com/photo-1518725522904-4b3939358342?fit=crop&w=210&q=80';
-
+const googleBasicProfile = 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
 const Viewed = [
   'https://images.unsplash.com/photo-1508264443919-15a31e1d9c1a?fit=crop&w=240&q=80',
   'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?fit=crop&w=240&q=80',
@@ -20,4 +20,5 @@ export default {
   Profile,
   Viewed,
   Avatar,
+  googleBasicProfile
 }

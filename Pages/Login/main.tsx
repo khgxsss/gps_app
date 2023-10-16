@@ -45,14 +45,14 @@ const styles = StyleSheet.create({
   container: {
   },
   buttonContainer: {
-    backgroundColor: Theme.COLORS?.SUCCESS,
+    backgroundColor: Theme.COLORS.SUCCESS,
     padding: 15,
     borderRadius: 50,
     alignItems: "center",
     marginTop: 20,
   },
   buttonText: {
-    color: Theme.COLORS?.WHITE,
+    color: Theme.COLORS.WHITE,
     fontSize: 20,
   },
 });

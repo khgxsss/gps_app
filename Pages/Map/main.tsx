@@ -6,7 +6,7 @@ import { MaterialCommunityIcons } from '../../Components/IconSets';
 import ActionButton from 'react-native-action-button-fork1';
 import IntentLauncher from 'react-native-intent-launcher-fork1';
 import { DeviceDataType, useAuth } from '../../Navigation/AuthContext';
-import Theme from '../../constants/Theme';
+import Theme from '../../Constants/Theme';
 
 const MapComponent = () => {
     const [location, setLocation] = useState<Coord>({ latitude: 37.35882350130591, longitude: 127.10469231924353 });
