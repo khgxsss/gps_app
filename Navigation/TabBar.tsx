@@ -11,10 +11,9 @@ import {
 import * as shape from "d3-shape";
 import Svg, { Path } from "react-native-svg";
 import StaticTabbar from "./StaticTabbar";
+import { width, tabHeight } from "./AuthContext";
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
-let { width } = Dimensions.get("window");
-const height = 65;
 
 interface Point {
   x: number;
@@ -30,8 +29,8 @@ const getPath = (tabWidth: number, width: number, totalTab: number): string => {
     { x: width + tabWidth / 2 - 100, y: 0 },
     { x: width + tabWidth / 2 - 65 + -35, y: 0 },
     { x: width + tabWidth / 2 - 50 + 10, y: -6 },
-    { x: width + tabWidth / 2 - 50 + 15, y: height - 14 },
-    { x: width + tabWidth / 2 + 50 - 15, y: height - 14 },
+    { x: width + tabWidth / 2 - 50 + 15, y: tabHeight - 14 },
+    { x: width + tabWidth / 2 + 50 - 15, y: tabHeight - 14 },
     { x: width + tabWidth / 2 + 50 - 10, y: -6 },
     { x: width + tabWidth / 2 + 65 - -35, y: 0 },
     { x: width + tabWidth / 2 + 100, y: 0 },
@@ -131,7 +130,7 @@ const Tabbar: React.FC<Props> = (props) => {
         >
           <View
             {...{
-              height,
+              height:tabHeight,
               width: CustomWidth,
               backgroundColor: tabBarContainerBackground
                 ? tabBarContainerBackground
@@ -145,7 +144,7 @@ const Tabbar: React.FC<Props> = (props) => {
           >
             <AnimatedSvg
               width={CustomWidth * 2}
-              {...{ height }}
+              {...{ height:tabHeight }}
               style={{
                 transform: [{ translateX }],
                 justifyContent: "center",

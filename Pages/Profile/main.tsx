@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Dimensions, ScrollView, Image, ImageBackground, Platform, View } from 'react-native';
-import { Block, Button, Text, theme } from 'galio-framework';
+import { StyleSheet, Dimensions, ScrollView, Image, ImageBackground, Platform, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../components/IconSets';
 
-import { Images, materialTheme } from '../../constants';
-
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-import { height, useAuth, width } from '../../Navigation/AuthContext';
+import { componentHeight, height, useAuth, width } from '../../Navigation/AuthContext';
 import ActionButton from 'react-native-action-button-fork1';
 import Theme from '../../constants/Theme';
 import SyncModalComponent from './syncModal';
+import Images from '../../constants/Images';
 
 const thumbMeasure = (width - 48 - 32) / 3;
 
@@ -103,60 +101,60 @@ const ProfileComponent = () => {
         source={ Images.Profile }
         style={styles.profileContainer}
         imageStyle={styles.profileImage}>
-        <Block flex style={styles.profileDetails}>
-          <Block style={styles.profileTexts}>
-          <Block style = {styles.userImgBlock}>
+        <View style={styles.profileDetails}>
+          <View style={styles.profileTexts}>
+          <View style = {styles.userImgBlock}>
             <Image
               style={styles.userImg}
               source={{uri: user.photoURL ? user.photoURL : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
             />
-          </Block>
-          <Text color="white" size={28} style={{ paddingBottom: 8 }}>{user.displayName}</Text>
-              <Block row space="between">
-                <Block row>
-                  <Block middle style={styles.pro}>
-                    <Text size={16} color="white">Pro</Text>
-                  </Block>
-                  <Text color="white" size={16} muted style={styles.seller}>User</Text>
-                </Block>
-                <Block>
-                  <Text color={theme.COLORS?.NEUTRAL} size={16}>
-                    <FontAwesome name="map-marker" color={theme.COLORS?.NEUTRAL} size={16} />
+          </View>
+          <Text style={{ paddingBottom: 8, fontSize:28, color:Theme.COLORS.WHITE }}>{user.displayName}</Text>
+              <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+                <View style={{flexDirection:'row'}}>
+                  <View style={styles.pro}>
+                    <Text style={{fontSize:16, color:Theme.COLORS.WHITE}}>Pro</Text>
+                  </View>
+                  <Text style={styles.seller}>User</Text>
+                </View>
+                <View>
+                  <Text style={{color:Theme.COLORS.WHITE, fontSize:16}}>
+                    <FontAwesome name="map-marker" color={Theme.COLORS.WHITE} size={16} />
                     {` `} KR
                     </Text>
-                </Block>
-              </Block>
-            </Block>
+                </View>
+              </View>
+            </View>
           <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.15)']} style={styles.gradient} />
-        </Block>
+        </View>
       </ImageBackground>
-      <Block style={styles.options}>
-        <Block row space="between" style={{ padding: theme.SIZES?.BASE, }}>
-          <Block middle>
-            <Text bold size={13} color={theme.COLORS?.BLACK} style={{marginBottom: 8}}>36</Text>
-            <Text muted size={13}>Total Devices</Text>
-          </Block>
-          <Block middle>
-            <Text bold size={13} style={{marginBottom: 8}} color={theme.COLORS?.PRIMARY}>5</Text>
-            <Text muted size={13}>Online Devices</Text>
-          </Block>
-        </Block>
-        <Block row space="between" style={{ marginTop: 16,paddingVertical: 16, alignItems: 'baseline' }}>
-          <Text size={16} color={theme.COLORS?.BLACK}>Recently updated (24hours)</Text>
-          <Text size={12} color={theme.COLORS?.PRIMARY} onPress={() => console.log('home')}>View All</Text>
-        </Block>
+      <View style={styles.options}>
+        <View style={{ padding: Theme.SIZES.BASE, flexDirection:'row', justifyContent:'space-between' }}>
+          <View style={{justifyContent:'center', alignItems:'center'}}>
+            <Text style={{marginBottom: 8, fontWeight:'bold', fontSize:13, color:Theme.COLORS.BLACK}}>36</Text>
+            <Text style={{fontSize:13}}>Total Devices</Text>
+          </View>
+          <View style={{justifyContent:'center', alignItems:'center'}}>
+            <Text style={{marginBottom: 8, fontWeight:'bold', fontSize:13, color:Theme.COLORS.RED}} >5</Text>
+            <Text style={{fontSize:13}}>Online Devices</Text>
+          </View>
+        </View>
+        <View style={{ marginTop: 16,paddingVertical: 16, alignItems: 'baseline', flexDirection:'row', justifyContent:'space-between' }}>
+          <Text style={{fontSize:16, color:Theme.COLORS.BLACK}}>Recently updated (24hours)</Text>
+          <Text style={{fontSize:13, color:Theme.COLORS.PRIMARY}} onPress={() => console.log('home')}>View All</Text>
+        </View>
         <View style={styles.optionLine} />
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Block row >
+          <View style={{flexDirection:'row'}} >
             {devices.map((device, Index) => (
-              <Block key={Index} style={styles.textContainer}>
+              <View key={Index} style={styles.textContainer}>
                 <Text style={styles.thumb}>{device.device}</Text>
-              </Block>
+              </View>
             ))}
-          </Block>
+          </View>
         </ScrollView>
-      </Block>
-      <ActionButton buttonColor={Theme.COLORS.LABEL} style={styles.actionButton} renderIcon={active => (<Ionicons name="settings-sharp" color={theme.COLORS?.WHITE} size={25}/>)}>
+      </View>
+      <ActionButton buttonColor={Theme.COLORS.LABEL} style={styles.actionButton} renderIcon={active => (<Ionicons name="settings-sharp" color={Theme.COLORS.WHITE} size={25}/>)}>
         <ActionButton.Item buttonColor='#9b59b6' title='Wifi Settings' onPress={() => setModalVisible(true)}>
             <MaterialCommunityIcons name="wifi-cog" color={'#fff'} size={25}/>
         </ActionButton.Item>
@@ -180,9 +178,10 @@ const styles = StyleSheet.create({
     height: '40%',
   },
   profileDetails: {
-    paddingTop: theme?.SIZES?.BASE ? theme.SIZES.BASE * 4 : 0,
+    flex: 1,
+    paddingTop: Theme.SIZES.BASE * 4,
     justifyContent: 'flex-end',
-    paddingBottom: theme?.SIZES?.BASE ? theme.SIZES.BASE * 6 : 0,
+    paddingBottom: Theme.SIZES.BASE * 6
   },
   userImgBlock: {
     justifyContent:'center',
@@ -194,24 +193,27 @@ const styles = StyleSheet.create({
     borderRadius: 50
   },
   profileTexts: {
-    paddingHorizontal: theme?.SIZES?.BASE ? theme.SIZES.BASE * 2 : 0,
-    paddingVertical: theme?.SIZES?.BASE ? theme.SIZES.BASE * 2 : 0,
+    paddingHorizontal: Theme.SIZES.BASE * 2,
+    paddingVertical: Theme.SIZES.BASE * 2,
     zIndex: 3
   },
   pro: {
-    backgroundColor: materialTheme.COLORS.LABEL,
+    backgroundColor: Theme.COLORS.LABEL,
     paddingHorizontal: 6,
-    marginRight: theme?.SIZES?.BASE ? theme.SIZES.BASE / 2 : 0,
-    borderRadius: 4
+    marginRight: Theme.SIZES.BASE / 2,
+    borderRadius: 4,
+    justifyContent:'center',
+    alignItems: 'center'
   },
   seller: {
-    marginRight: theme?.SIZES?.BASE ? theme.SIZES.BASE / 2 : 0,
+    fontSize:16, 
+    color:Theme.COLORS.WHITE,
+    marginRight: Theme.SIZES.BASE / 2,
   },
   options: {
-    position:'relative',
-    padding: theme?.SIZES?.BASE ? theme.SIZES.BASE : 0,
-    marginHorizontal: theme?.SIZES?.BASE ? theme.SIZES.BASE : 0,
-    marginTop: theme?.SIZES?.BASE ? -theme.SIZES.BASE * 7 : 0,
+    padding: Theme.SIZES.BASE,
+    marginHorizontal: Theme.SIZES.BASE,
+    marginTop: -Theme.SIZES.BASE * 7,
     borderTopLeftRadius: 13,
     borderTopRightRadius: 13,
     borderBottomLeftRadius: 13,
@@ -222,7 +224,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOpacity: 0.2,
     zIndex: 2,
-    height: '60%'
+    height: componentHeight * 0.6 + Theme.SIZES.BASE * 7
   },
   optionLine: { 
     height: 1, 
@@ -249,7 +251,7 @@ const styles = StyleSheet.create({
     borderWidth: 2
   },
   thumb: {
-    color:theme.COLORS?.WHITE
+    color:Theme.COLORS.WHITE
   },
   gradient: {
     zIndex: 3,
@@ -260,8 +262,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   actionButton: {
-    position:'absolute',
-    marginBottom: 80,
     zIndex: 3
   }
 });

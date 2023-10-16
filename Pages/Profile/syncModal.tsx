@@ -9,16 +9,14 @@ import Theme from '../../constants/Theme';
 
 import WifiManager, { WifiEntry, WiFiObject } from 'react-native-wifi-reborn';
 import ProgressBar from 'react-native-progress/Bar';
-import LoaderComponent from '../../components/Loader';
 
 const SyncModalComponent: React.FC = () => {
 
-    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isModalVisible, setModalVisible  } = useAuth();
+    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isModalVisible, setModalVisible, loading, setLoading  } = useAuth();
     const [wifiList, setWifiList] = useState<WifiEntry[]>([]);
     const [selectedWifi, setSelectedWifi] = useState<WiFiObject>();
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [connectedWifi, setConnectedwifi] = useState<string>('');
 
@@ -38,6 +36,18 @@ const SyncModalComponent: React.FC = () => {
             .catch((error) => {
             console.log("Cannot get current SSID", error);
             });
+    }, []);
+
+    useEffect(() => {
+        const enableWifi = async () => {
+            const wifiState = await WifiManager.isEnabled();
+            if (!wifiState) {
+                // Android에서만 작동합니다.
+                await WifiManager.forceWifiUsageWithOptions(true, {noInternet:true});
+            }
+        }
+
+        enableWifi();
     }, []);
 
     const fetchWifiList = async () => {
@@ -102,8 +112,7 @@ const SyncModalComponent: React.FC = () => {
                 activeOpacity={1}
             >
                 <View style={styles.modalView}>
-                    <ProgressBar progress={progress} width={null} color={Theme.COLORS.INFO} unfilledColor={Theme.COLORS.DEFAULT} style={{padding:4, margin:50}} borderWidth={0}/>
-                    {/* {loading ? <LoaderComponent/>:<></> } */}
+                    <ProgressBar progress={progress} width={null} color={Theme.COLORS.INFO} unfilledColor={Theme.COLORS.DEFAULT} style={{padding:4, margin:50}} borderWidth={0}/>                    
                     <ScrollView persistentScrollbar={true} >
                         <TouchableOpacity activeOpacity={1}>
                         {

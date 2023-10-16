@@ -1,27 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Button, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import NaverMapView, { Marker, Polyline } from 'react-native-nmap';
+import { Button, View, TouchableOpacity, Text, StyleSheet, Alert, Linking, PermissionsAndroid } from 'react-native';
+import NaverMapView, { Coord, Marker, Polyline } from 'react-native-nmap-fork1';
 import Geolocation from 'react-native-geolocation-service';
 import { MaterialCommunityIcons } from '../../components/IconSets';
 import ActionButton from 'react-native-action-button-fork1';
-import { useAuth } from '../../Navigation/AuthContext';
+import IntentLauncher from 'react-native-intent-launcher-fork1';
+import { DeviceDataType, useAuth } from '../../Navigation/AuthContext';
 import Theme from '../../constants/Theme';
 
-type LocationType = {
-    latitude?: number;
-    longitude?: number;
-};
-
-type DeviceData = {
-    deviceid: string;
-    location: LocationType;
-};
-
 const MapComponent = () => {
-    const [location, setLocation] = useState<LocationType>({ latitude: 37.35882350130591, longitude: 127.10469231924353 });
+    const [location, setLocation] = useState<Coord>({ latitude: 37.35882350130591, longitude: 127.10469231924353 });
     const [lastTouchTime, setLastTouchTime] = useState<number | null>(null);
     const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory } = useAuth();
-
+    
     useEffect(() => {
         const watchId = Geolocation.watchPosition(
             position => {
@@ -34,9 +25,30 @@ const MapComponent = () => {
 
                 setLocation({ latitude, longitude });
             },
-            error => {
-                console.log(error);
-            },
+            (error) => {
+                if (error.code === 2) { // 위치 서비스가 사용 불가능한 경우
+                    // 위치 서비스 활성화 요청
+                    Alert.alert(
+                        'GPS Required',
+                        'Please turn on GPS for better experience',
+                    [
+                        {
+                        text: 'Go to GPS Settings',
+                        onPress: () => {
+                            IntentLauncher.startActivity({
+                                action: 'android.settings.LOCATION_SOURCE_SETTINGS'
+                            });
+                        }
+                        },
+                        {
+                        text: 'Cancel',
+                        onPress: () => {},
+                        style: 'cancel',
+                        },
+                    ]
+                    );
+                }
+              },
             {
                 enableHighAccuracy: true,
                 interval: 1000,
@@ -62,7 +74,7 @@ const MapComponent = () => {
         if (!location) return <></>;
         return (
             // 사용자 빨간 원 현위치
-            <Marker coordinate={location} width={25} height={25}>
+            <Marker coordinate={location} width={25} height={25} onClick={()=>console.log('click current')}>
                 <MaterialCommunityIcons name="circle-slice-8" size={25} color="red" />
             </Marker>
         );
@@ -71,8 +83,8 @@ const MapComponent = () => {
     const renderDeviceMarkers = () => {
         if (!fetchedWData || fetchedWData.length === 0) return null;
 
-        return fetchedWData.map((device: DeviceData) => (
-            <Marker key={device.deviceid} coordinate={device.location} width={35} height={35} >
+        return fetchedWData.map((device:DeviceDataType, i) => (
+            <Marker key={i} coordinate={device.location} width={35} height={35} >
                 <View style={styles.markerContainer}>
                     <MaterialCommunityIcons name="flag" size={35} color="#9418db" />
                     <Text style={styles.deviceIdText}>{device.deviceid}</Text>
@@ -87,7 +99,7 @@ const MapComponent = () => {
         const userLat = location.latitude!;
         const userLon = location.longitude!;
     
-        return fetchedWData.map((device: DeviceData) => {
+        return fetchedWData.map((device: DeviceDataType) => {
             const deviceLat = device.location.latitude!;
             const deviceLon = device.location.longitude!;
             const distance = calculateDistance(userLat, userLon, deviceLat, deviceLon);
@@ -111,10 +123,10 @@ const MapComponent = () => {
         const userLat = location.latitude!;
         const userLon = location.longitude!;
     
-        return fetchedWData.map((device: DeviceData) => {
+        return fetchedWData.map((device: DeviceDataType) => {
             const deviceLat = device.location.latitude!;
             const deviceLon = device.location.longitude!;
-            const distance = calculateDistance(userLat, userLon, deviceLat, deviceLon);
+            const distance:number = calculateDistance(userLat, userLon, deviceLat, deviceLon);
     
             if (distance <= 3) {  // If distance is less than or equal to 3 km
                 // Calculate the midpoint between user and device
@@ -141,7 +153,7 @@ const MapComponent = () => {
     return (
         <View style={styles.allContainer}>
             <NaverMapView 
-                showsMyLocationButton={false}
+                showsMyLocationButton={true}
                 mapType={mapType}
                 style={{ height:"93.5%" }}
                 center={{ ...location, zoom: 13 }}
@@ -184,10 +196,6 @@ const styles = StyleSheet.create({
     distanceText: {
         fontSize: 10,
         color: 'black'
-    },
-    actionButton: {
-        position:'absolute',
-        marginBottom: 80
     }
 });
 

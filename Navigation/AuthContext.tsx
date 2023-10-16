@@ -2,6 +2,7 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 import Auth, { AuthEventEmitter, AuthEvents, User } from 'react-native-firebaseui-auth';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import { Dimensions } from 'react-native';
+import { Coord } from 'react-native-nmap-fork1';
 
 interface AuthContextType {
     activeTab: string;
@@ -10,7 +11,7 @@ interface AuthContextType {
     setMapType: (value: number) => void;
     user: User;
     setUser: (value: User) => void;
-    fetchedWData: object[];
+    fetchedWData: DeviceDataType[];
     setFetchedWData: (value: object[]) => void;
     handleSignIn: () => void;
     handleSignOut: () => void;
@@ -19,11 +20,18 @@ interface AuthContextType {
     setTabHistory:(value: number[]) => void;
     isModalVisible: boolean;
     setModalVisible: (value: boolean) => void;
+    loading: boolean;
+    setLoading: (value: boolean) => void;
 }
 
 interface AuthProviderProps {
     children: ReactNode;
 }
+
+export type DeviceDataType = {
+  deviceid: string;
+  location: Coord;
+};
 
 const MAP_TYPE = {
     Basic: 0,
@@ -41,7 +49,9 @@ const test_data = [
 ]
 
 const default_user = {displayName:'',email:'',isNewUser:false,phoneNumber:'',photoURL:'',uid:'',providerId:'',creationTimestamp:0,lastSignInTimestamp:0}
-export const { width, height } = Dimensions.get('screen');
+export const { width, height } = Dimensions.get('window');
+export const tabHeight = 65
+export const componentHeight = height - tabHeight
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -52,6 +62,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   const [fetchedWData, setFetchedWData] = React.useState<object[]>(test_data);
   const [tabHistory, setTabHistory] = useState<number[]>([1])
   const [isModalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const eventListener = AuthEventEmitter.addListener(
@@ -141,7 +152,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory, isModalVisible, setModalVisible }}>
+    <AuthContext.Provider value={{ activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory, isModalVisible, setModalVisible, loading, setLoading }}>
       {children}
     </AuthContext.Provider>
   );
