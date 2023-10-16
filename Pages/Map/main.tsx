@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, View, TouchableOpacity, Text, StyleSheet, Alert, Linking, PermissionsAndroid } from 'react-native';
 import NaverMapView, { Coord, Marker, Polyline } from 'react-native-nmap-fork1';
 import Geolocation from 'react-native-geolocation-service';
-import { MaterialCommunityIcons } from '../../Components/IconSets';
+import { Ionicons, MaterialCommunityIcons } from '../../Components/IconSets';
 import ActionButton from 'react-native-action-button-fork1';
 import IntentLauncher from 'react-native-intent-launcher-fork1';
 import { DeviceDataType, useAuth } from '../../Navigation/AuthContext';
@@ -153,9 +153,9 @@ const MapComponent = () => {
     return (
         <View style={styles.allContainer}>
             <NaverMapView 
-                showsMyLocationButton={true}
+                showsMyLocationButton={false}
                 mapType={mapType}
-                style={{ height:"93.5%" }}
+                style={{ height:"100%" }}
                 center={{ ...location, zoom: 13 }}
                 onTouch={handleTouch}
                 onCameraChange={handleTouch}
@@ -165,13 +165,15 @@ const MapComponent = () => {
                 {renderDistanceLines()}
                 {renderDistanceMarkers()}
             </NaverMapView>
-                <ActionButton buttonColor={Theme.COLORS.LABEL} style={styles.actionButton} >
-                {Object.entries(MAP_TYPE).map(([key, value]) => (
-                    <ActionButton.Item buttonColor={Theme.COLORS.BUTTON_COLOR} title={key} key={key} onPress={() => setMapType(value)}>
-                        <MaterialCommunityIcons name="map-legend" color={'#fff'} size={25}/>
-                    </ActionButton.Item>
-                ))}
-                </ActionButton>
+            <ActionButton buttonColor={Theme.COLORS.LABEL}>
+                {
+                    Object.entries(MAP_TYPE).map(([key, value]) => (
+                        <ActionButton.Item buttonColor={Theme.COLORS.BUTTON_COLOR} title={key} key={key} onPress={() => setMapType(value)}>
+                            <MaterialCommunityIcons name="map-legend" color={'#fff'} size={25}/>
+                        </ActionButton.Item>
+                    ))
+                }
+            </ActionButton>
         </View>
     );
 };

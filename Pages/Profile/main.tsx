@@ -158,6 +158,9 @@ const ProfileComponent = () => {
         <ActionButton.Item buttonColor='#9b59b6' title='Wifi Settings' onPress={() => setModalVisible(true)}>
             <MaterialCommunityIcons name="wifi-cog" color={'#fff'} size={25}/>
         </ActionButton.Item>
+        <ActionButton.Item buttonColor='#9b59b6' title={"Map Settings"} onPress={() => console.log('133')}>
+            <MaterialCommunityIcons name="map" color={Theme.COLORS.WHITE} size={25}/>
+        </ActionButton.Item>
         <ActionButton.Item buttonColor='#9b59b6' title='Logout' onPress={()=>{handleSignOut()}}>
             <MaterialCommunityIcons name="logout" color={'#fff'} size={25}/>
         </ActionButton.Item>
@@ -169,13 +172,13 @@ const ProfileComponent = () => {
 
 const styles = StyleSheet.create({
   profile: {
-    height:'100%'
+    height: '100%',
   },
   profileImage: {
     height: '100%',
   },
   profileContainer: {
-    height: '40%',
+    height: componentHeight * 0.4,
   },
   profileDetails: {
     flex: 1,
@@ -224,7 +227,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOpacity: 0.2,
     zIndex: 2,
-    height: componentHeight * 0.6 + Theme.SIZES.BASE * 7
+    height: componentHeight * 0.6
   },
   optionLine: { 
     height: 1, 
