@@ -1,22 +1,12 @@
 import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD
 import { Button, View, TouchableOpacity, Text, StyleSheet, Alert, Linking, PermissionsAndroid } from 'react-native';
 import NaverMapView, { Coord, Marker, Polyline } from 'react-native-nmap-fork1';
-=======
-import { Button, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import NaverMapView, { Marker, Polyline } from 'react-native-nmap-fork1';
->>>>>>> ddbf69826dee5532440c7343ff0fee7ca4dee8ba
 import Geolocation from 'react-native-geolocation-service';
 import { MaterialCommunityIcons } from '../../Components/IconSets';
 import ActionButton from 'react-native-action-button-fork1';
-<<<<<<< HEAD
 import IntentLauncher from 'react-native-intent-launcher-fork1';
 import { DeviceDataType, useAuth } from '../../Navigation/AuthContext';
 import Theme from '../../constants/Theme';
-=======
-import { useAuth } from '../../Navigation/AuthContext';
-import Theme from '../../Constants/Theme';
->>>>>>> ddbf69826dee5532440c7343ff0fee7ca4dee8ba
 
 const MapComponent = () => {
     const [location, setLocation] = useState<Coord>({ latitude: 37.35882350130591, longitude: 127.10469231924353 });

@@ -9,10 +9,6 @@ import Theme from '../../Constants/Theme';
 
 import WifiManager, { WifiEntry, WiFiObject } from 'react-native-wifi-reborn';
 import ProgressBar from 'react-native-progress/Bar';
-<<<<<<< HEAD
-=======
-import LoaderComponent from '../../Components/Loader';
->>>>>>> ddbf69826dee5532440c7343ff0fee7ca4dee8ba
 
 const SyncModalComponent: React.FC = () => {
 
