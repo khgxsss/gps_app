@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Dimensions, ScrollView, Image, ImageBackground, Platform, View, Modal, TouchableOpacity, TextInput, Text, Button} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../components/IconSets';
+import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../Components/IconSets';
 
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import { height, useAuth, width } from '../../Navigation/AuthContext';
-import Theme from '../../constants/Theme';
+import Theme from '../../Constants/Theme';
 
 import WifiManager, { WifiEntry, WiFiObject } from 'react-native-wifi-reborn';
 import ProgressBar from 'react-native-progress/Bar';
+<<<<<<< HEAD
+=======
+import LoaderComponent from '../../Components/Loader';
+>>>>>>> ddbf69826dee5532440c7343ff0fee7ca4dee8ba
 
 const SyncModalComponent: React.FC = () => {
 

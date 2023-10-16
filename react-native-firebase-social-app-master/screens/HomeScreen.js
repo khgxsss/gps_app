@@ -12,7 +12,7 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import PostCard from '../components/PostCard';
+import PostCard from '../Components/PostCard';
 
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';

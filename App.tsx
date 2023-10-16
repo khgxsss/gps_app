@@ -22,8 +22,9 @@ import MapComponent from './Pages/Map/main';
 import LoginComponent from './Pages/Login/main';
 import ProfileComponent from './Pages/Profile/main';
 import WebSocketComponent from './components/Websocket/main';
+import { Block, GalioProvider } from 'galio-framework';
+import { Images, materialTheme } from "./constants/";
 import Theme from './constants/Theme';
-import LoaderComponent from './components/Loader';
 
 function App(): JSX.Element {
 

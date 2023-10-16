@@ -8,9 +8,9 @@ import {
   StyleSheet,
   ScrollView
 } from 'react-native';
-import FormInput from '../components/FormInput';
-import FormButton from '../components/FormButton';
-import SocialButton from '../components/SocialButton';
+import FormInput from '../Components/FormInput';
+import FormButton from '../Components/FormButton';
+import SocialButton from '../Components/SocialButton';
 import {AuthContext} from '../navigation/AuthProvider';
 
 const LoginScreen = ({navigation}) => {

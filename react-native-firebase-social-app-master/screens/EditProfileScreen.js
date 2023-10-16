@@ -13,7 +13,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import FormButton from '../components/FormButton';
+import FormButton from '../Components/FormButton';
 
 import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
