@@ -157,13 +157,6 @@ const Tabbar: React.FC<Props> = (props) => {
               <StaticTabbar {...props} {...{ tabs, value }} />
             </View>
           </View>
-          <SafeAreaView
-            style={{
-              alignSelf: "center",
-              borderBottomLeftRadius,
-              borderBottomRightRadius,
-            }}
-          />
         </View>
       </>
     );

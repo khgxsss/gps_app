@@ -13,7 +13,7 @@ import {
 import NetInfo from "@react-native-community/netinfo";
 import { MaterialCommunityIcons } from './Components/IconSets';
 
-import { AuthProvider, componentHeight, useAuth } from './Navigation/AuthContext';
+import { AuthProvider, componentHeight, height, useAuth } from './Navigation/AuthContext';
 import IntentLauncher from 'react-native-intent-launcher-fork1';
 
 import Tabbar from './Navigation/TabBar';
@@ -74,10 +74,10 @@ function App(): JSX.Element {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <StatusBar/>
-      <LoginComponent/>
+      {/* <LoginComponent/> */}
       {loading ? <LoaderComponent/>:<></> }
       {
-        user.uid ? (
+        !user.uid ? (
           <>
             <View style={styles.mainContent}>
               {renderTabContent()}
@@ -102,7 +102,7 @@ function App(): JSX.Element {
 
 const styles = StyleSheet.create({
   safeAreaView: {
-    height:"100%",
+    height:height,
     backgroundColor: '#fff'
   },
   mainContent: {

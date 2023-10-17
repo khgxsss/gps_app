@@ -12,7 +12,7 @@ interface AuthContextType {
     user: User;
     setUser: (value: User) => void;
     fetchedWData: DeviceDataType[];
-    setFetchedWData: (value: object[]) => void;
+    setFetchedWData: (value: DeviceDataType[]) => void;
     handleSignIn: () => void;
     handleSignOut: () => void;
     MAP_TYPE: object;
@@ -28,10 +28,20 @@ interface AuthProviderProps {
     children: ReactNode;
 }
 
-export type DeviceDataType = {
+export interface DeviceDataType {
   deviceid: string;
   location: Coord;
 };
+
+export interface Region {
+  latitude: number;
+  longitude: number;
+  zoom: number;
+  //지도의 콘텐츠 영역에 대한 좌표열을 반환합니다. 좌표열은 네 개의 좌표로 구성된 사각형으로 표현됩니다. 단, 반환되는 배열의 크기는 5이며, 첫 번째 원소와 마지막 원소가 동일한 지점을 가리킵니다. 콘텐츠 패딩이 모두 0이면 getCoveringRegion()과 동일한 사각형이, 콘텐츠 패딩이 지정되어 있으면 getCoveringRegion()에서 콘텐츠 패딩을 제외한 사각형이 반환됩니다.
+  contentRegion: [Coord, Coord, Coord, Coord, Coord];
+  // 콘텐츠 패딩을 포함한 지도의 뷰 전체 영역에 대한 좌표열을 반환합니다. 좌표열은 네 개의 좌표로 구성된 사각형으로 표현됩니다. 단, 반환되는 배열의 크기는 5이며, 첫 번째 원소와 마지막 원소가 동일한 지점을 가리킵니다.
+  coveringRegion: [Coord, Coord, Coord, Coord, Coord]; 
+}
 
 const MAP_TYPE = {
     Basic: 0,
@@ -59,7 +69,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   const [user, setUser] = useState<User>(default_user);
   const [activeTab, setActiveTab] = React.useState('Map');
   const [mapType, setMapType] = useState(MAP_TYPE.Basic); // used in MapComponent
-  const [fetchedWData, setFetchedWData] = React.useState<object[]>(test_data);
+  const [fetchedWData, setFetchedWData] = React.useState<DeviceDataType[]>(test_data);
   const [tabHistory, setTabHistory] = useState<number[]>([1])
   const [isModalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);

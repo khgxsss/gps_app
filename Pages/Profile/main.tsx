@@ -87,7 +87,7 @@ const ProfileComponent = () => {
   }
 
   useEffect(() => {
-    getUser();
+    // getUser();
     fetchDevices();
   }, []);
 
