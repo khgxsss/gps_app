@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Dimensions, ScrollView, Image, ImageBackground, Platform, View, Modal, TouchableOpacity, TextInput, Text, Button} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../Components/IconSets';
 
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
@@ -42,10 +41,11 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0,0,0,0.5)", // 반투명한 회색 배경
     },
     modalView: {
+        position:'absolute',
         width: "90%",
         height: "90%",
         padding: 20,
-        backgroundColor:Theme.COLORS.SECONDARY,
+        backgroundColor:Theme.COLORS.WHITE,
         borderRadius: 10,
         elevation: 5, // Android shadow
         shadowColor: "#000", // iOS shadow

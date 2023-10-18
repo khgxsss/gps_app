@@ -243,9 +243,10 @@ const MapComponent = () => {
                 </ActionButton.Item>
             </ActionButton>
             {
-
+                isMapSettingsModalVisible && (
+                    <MapSettingsModalComponent/>
+                )
             }
-            <MapSettingsModalComponent/>
         </View>
     );
 };
