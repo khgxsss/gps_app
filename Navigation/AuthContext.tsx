@@ -18,8 +18,10 @@ interface AuthContextType {
     MAP_TYPE: object;
     tabHistory: number[];
     setTabHistory:(value: number[]) => void;
-    isModalVisible: boolean;
-    setModalVisible: (value: boolean) => void;
+    isWifiModalVisible: boolean;
+    setWifiModalVisible: (value: boolean) => void;
+    isMapSettingsModalVisible: boolean;
+    setMapSettingsModalVisible: (value: boolean) => void;
     loading: boolean;
     setLoading: (value: boolean) => void;
 }
@@ -31,7 +33,13 @@ interface AuthProviderProps {
 export interface DeviceDataType {
   deviceid: string;
   location: Coord;
+  receivedtime: number;
 };
+
+export interface FetchedDataType {
+  shiplocation: Coord;
+  device: DeviceDataType
+}
 
 export interface Region {
   latitude: number;
@@ -44,7 +52,7 @@ export interface Region {
 }
 
 const MAP_TYPE = {
-    Basic: 0,
+    BASIC: 0,
     TERRAIN: 4,
     SATELLITE: 2,
     HYBRID: 3,
@@ -52,10 +60,10 @@ const MAP_TYPE = {
 };
 
 // only for dev
-const test_data = [
-  { deviceid: "40ca63fffe1deca5", location: { latitude: 36.4383755, longitude: 127.4248978 } },
-  { deviceid: "40ca63fffe1deca6", location: { latitude: 36.4335753, longitude: 127.4028976 } },
-  { deviceid: "40ca63fffe1deca7", location: { latitude: 36.4235753, longitude: 127.4428976 } }
+const test_data:DeviceDataType[] = [
+  { deviceid: "40ca63fffe1deca5", location: { latitude: 36.4383755, longitude: 127.4248978 }, receivedtime: Date.now()+10000},
+  { deviceid: "40ca63fffe1deca6", location: { latitude: 36.4335753, longitude: 127.4028976 }, receivedtime:Date.now() },
+  { deviceid: "40ca63fffe1deca7", location: { latitude: 36.4235753, longitude: 127.4428976 }, receivedtime:Date.now() }
 ]
 
 const default_user = {displayName:'',email:'',isNewUser:false,phoneNumber:'',photoURL:'',uid:'',providerId:'',creationTimestamp:0,lastSignInTimestamp:0}
@@ -68,10 +76,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({children}:AuthProviderProps) => {
   const [user, setUser] = useState<User>(default_user);
   const [activeTab, setActiveTab] = React.useState('Map');
-  const [mapType, setMapType] = useState(MAP_TYPE.Basic); // used in MapComponent
+  const [mapType, setMapType] = useState(MAP_TYPE.BASIC); // used in MapComponent
   const [fetchedWData, setFetchedWData] = React.useState<DeviceDataType[]>(test_data);
   const [tabHistory, setTabHistory] = useState<number[]>([1])
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [isWifiModalVisible, setWifiModalVisible] = useState(false);
+  const [isMapSettingsModalVisible, setMapSettingsModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -162,7 +171,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory, isModalVisible, setModalVisible, loading, setLoading }}>
+    <AuthContext.Provider value={{ activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory, isWifiModalVisible, setWifiModalVisible, isMapSettingsModalVisible, setMapSettingsModalVisible, loading, setLoading }}>
       {children}
     </AuthContext.Provider>
   );

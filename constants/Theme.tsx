@@ -22,7 +22,9 @@ export default {
     ICON: '#4A4A4A',
     WHITE: '#fff',
     BLACK: '#000',
-    RED: '#fc0303'
+    RED: '#fc0303',
+    DEVICE_ON: '#11fc05',
+    DEVICE_OFF: '#979797'
   },
   SIZES: {
     BLOCK_SHADOW_RADIUS: 2,

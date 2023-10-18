@@ -10,9 +10,9 @@ import Theme from '../../Constants/Theme';
 import WifiManager, { WifiEntry, WiFiObject } from 'react-native-wifi-reborn';
 import ProgressBar from 'react-native-progress/Bar';
 
-const SyncModalComponent: React.FC = () => {
+const WifiModalComponent: React.FC = () => {
 
-    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isModalVisible, setModalVisible, loading, setLoading  } = useAuth();
+    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isWifiModalVisible, setWifiModalVisible, loading, setLoading  } = useAuth();
     const [wifiList, setWifiList] = useState<WifiEntry[]>([]);
     const [selectedWifi, setSelectedWifi] = useState<WiFiObject>();
     const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -21,13 +21,12 @@ const SyncModalComponent: React.FC = () => {
     const [connectedWifi, setConnectedwifi] = useState<string>('');
 
     useEffect(() => {
-        if (isModalVisible) {
+        if (isWifiModalVisible) {
           fetchWifiList();
         }else {
             setWifiList([]);
         }
-      }, [isModalVisible]);
-    
+      }, [isWifiModalVisible]);
     useEffect(() => {
         WifiManager.getCurrentWifiSSID()
             .then((ssid) => {
@@ -90,7 +89,7 @@ const SyncModalComponent: React.FC = () => {
         setLoading(true);
         try {
           await WifiManager.connectToProtectedSSID(selectedWifi.SSID, password, false, false);
-          setModalVisible(false);
+          setWifiModalVisible(false);
         } catch (e) {
           console.error(e);
         }
@@ -102,9 +101,9 @@ const SyncModalComponent: React.FC = () => {
         <Modal
             transparent={true}
             animationType="slide"
-            visible={isModalVisible}
+            visible={isWifiModalVisible}
             onRequestClose={() => {
-                setModalVisible(!isModalVisible);
+                setWifiModalVisible(!isWifiModalVisible);
             }}
             >
             <TouchableOpacity
@@ -250,4 +249,4 @@ const styles = StyleSheet.create({
         borderRadius: 10
     }
 })
-export default SyncModalComponent;
+export default WifiModalComponent;

@@ -7,7 +7,7 @@ import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firest
 import { componentHeight, height, useAuth, width } from '../../Navigation/AuthContext';
 import ActionButton from 'react-native-action-button-fork1';
 import Theme from '../../Constants/Theme';
-import SyncModalComponent from './syncModal';
+import WifiModalComponent from './wifiModal';
 import Images from '../../Constants/Images';
 
 const thumbMeasure = (width - 48 - 32) / 3;
@@ -25,7 +25,7 @@ const ProfileComponent = () => {
   const [devices, setDevices] = useState<deviceType[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isModalVisible, setModalVisible  } = useAuth();
+  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isWifiModalVisible, setWifiModalVisible  } = useAuth();
 
   const fetchDevices = async () => {
     try {
@@ -155,17 +155,16 @@ const ProfileComponent = () => {
         </ScrollView>
       </View>
       <ActionButton buttonColor={Theme.COLORS.LABEL} style={styles.actionButton} renderIcon={active => (<Ionicons name="settings-sharp" color={Theme.COLORS.WHITE} size={25}/>)}>
-        <ActionButton.Item buttonColor='#9b59b6' title='Wifi Settings' onPress={() => setModalVisible(true)}>
+        <ActionButton.Item buttonColor='#9b59b6' title='Wifi Settings' onPress={() => setWifiModalVisible(true)}>
             <MaterialCommunityIcons name="wifi-cog" color={'#fff'} size={25}/>
-        </ActionButton.Item>
-        <ActionButton.Item buttonColor='#9b59b6' title={"Map Settings"} onPress={() => console.log('133')}>
-            <MaterialCommunityIcons name="map" color={Theme.COLORS.WHITE} size={25}/>
         </ActionButton.Item>
         <ActionButton.Item buttonColor='#9b59b6' title='Logout' onPress={()=>{handleSignOut()}}>
             <MaterialCommunityIcons name="logout" color={'#fff'} size={25}/>
         </ActionButton.Item>
       </ActionButton>
-      <SyncModalComponent/>
+      {
+        isWifiModalVisible && <WifiModalComponent/>
+      }
     </View>
   );
 };
