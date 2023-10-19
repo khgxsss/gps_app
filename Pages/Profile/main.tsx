@@ -4,13 +4,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../Components/IconSets';
 
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-import { componentHeight, height, useAuth, width } from '../../Navigation/AuthContext';
+import { useAuth } from '../../Navigation/AuthContext';
 import ActionButton from 'react-native-action-button-fork1';
 import Theme from '../../Constants/Theme';
 import WifiModalComponent from './wifiModal';
 import Images from '../../Constants/Images';
-
-const thumbMeasure = (width - 48 - 32) / 3;
 
 interface deviceType {
   userId: string;
@@ -177,7 +175,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   profileContainer: {
-    height: componentHeight * 0.4,
+    height: '40%',
   },
   profileDetails: {
     flex: 1,
@@ -226,7 +224,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOpacity: 0.2,
     zIndex: 2,
-    height: componentHeight * 0.6
+    height: '60%'
   },
   optionLine: { 
     height: 1, 

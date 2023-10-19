@@ -11,7 +11,7 @@ import {
 import * as shape from "d3-shape";
 import Svg, { Path } from "react-native-svg";
 import StaticTabbar from "./StaticTabbar";
-import { width, tabHeight } from "./AuthContext";
+import { useAuth } from "./AuthContext";
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 
@@ -20,7 +20,7 @@ interface Point {
   y: number;
 }
 
-const getPath = (tabWidth: number, width: number, totalTab: number): string => {
+const getPath = (tabWidth: number, width: number, totalTab: number, tabHeight: number): string => {
   const tab = shape
     .line<Point>()
     .x((d: Point) => d.x)
@@ -63,6 +63,8 @@ interface Props {
 }
 
 const Tabbar: React.FC<Props> = (props) => {
+
+  const { appDimension } = useAuth();
   const [value] = useState(new Animated.Value(0));
 
   const {
@@ -77,7 +79,7 @@ const Tabbar: React.FC<Props> = (props) => {
     containerBottomRightRadius,
   } = props;
 
-  let CustomWidth = containerWidth ? containerWidth : width;
+  let CustomWidth = containerWidth ? containerWidth : appDimension.appWidth;
 
   const translateX = value.interpolate({
     inputRange: [0, CustomWidth],
@@ -95,7 +97,7 @@ const Tabbar: React.FC<Props> = (props) => {
 
   let d;
   if (typeof tabWidth == "number") {
-    d = getPath(tabWidth, CustomWidth, tabs.length);
+    d = getPath(tabWidth, CustomWidth, tabs.length, appDimension.tabHeight);
   }
 
   let borderTopRightRadius = containerTopRightRadius
@@ -130,7 +132,7 @@ const Tabbar: React.FC<Props> = (props) => {
         >
           <View
             {...{
-              height:tabHeight,
+              height:appDimension.tabHeight,
               width: CustomWidth,
               backgroundColor: tabBarContainerBackground
                 ? tabBarContainerBackground
@@ -144,7 +146,7 @@ const Tabbar: React.FC<Props> = (props) => {
           >
             <AnimatedSvg
               width={CustomWidth * 2}
-              {...{ height:tabHeight }}
+              {...{ height:appDimension.tabHeight }}
               style={{
                 transform: [{ translateX }],
                 justifyContent: "center",
@@ -170,9 +172,6 @@ const Tabbar: React.FC<Props> = (props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: width,
-  },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
 });
 

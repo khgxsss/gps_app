@@ -1,8 +1,9 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import Auth, { AuthEventEmitter, AuthEvents, User } from 'react-native-firebaseui-auth';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import { Dimensions } from 'react-native';
 import { Coord } from 'react-native-nmap-fork1';
+import { useSafeAreaFrame } from 'react-native-safe-area-context';
 
 interface AuthContextType {
     activeTab: string;
@@ -31,10 +32,20 @@ interface AuthContextType {
     setWifiOn: (value: boolean) => void;
     cellularOn: boolean;
     setCellularOn: (value: boolean) => void;
+    appDimension: appDimensionType;
 }
 
 interface AuthProviderProps {
     children: ReactNode;
+}
+
+interface appDimensionType {
+  appWidth: number;
+  appHeight: number;
+  x?: number;
+  y?: number;
+  componentHeight:number;
+  tabHeight:number;
 }
 
 export interface DeviceDataType {
@@ -66,6 +77,15 @@ const MAP_TYPE = {
     NAVI: 1
 };
 
+const initialAppDimension: appDimensionType = {
+  appWidth: 0,
+  appHeight: 0,
+  x: 0,
+  y: 0,
+  tabHeight: 65,
+  componentHeight: 0
+};
+
 // only for dev
 const test_data:DeviceDataType[] = [
   { deviceid: "40ca63fffe1deca5", location: { latitude: 36.4383755, longitude: 127.4248978 }, receivedtime: Date.now()+10000},
@@ -74,9 +94,6 @@ const test_data:DeviceDataType[] = [
 ]
 
 const default_user = {displayName:'',email:'',isNewUser:false,phoneNumber:'',photoURL:'',uid:'',providerId:'',creationTimestamp:0,lastSignInTimestamp:0}
-export const { width, height } = Dimensions.get('window');
-export const tabHeight = 65
-export const componentHeight = height - tabHeight
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -92,8 +109,31 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   const [defaultMapZoomLevel, setDefaultMapZoomLevel] = useState<number>(13);
   const [wifiOn, setWifiOn] = useState<boolean>(false);
   const [cellularOn, setCellularOn] = useState<boolean>(false);
+  const [appDimension, setAppDimension] = useState<appDimensionType>(initialAppDimension);
+
+  const safeareadimension = useSafeAreaFrame();
+  
+  const appDimensionCache = useMemo(() => ({
+      appWidth: safeareadimension.width,
+      appHeight: safeareadimension.height,
+      x: safeareadimension.x,
+      y: safeareadimension.y,
+      tabHeight: 65,
+      componentHeight: safeareadimension.height - 65
+  }), [safeareadimension]);
+  
+  useEffect(() => {
+      // appDimension과 appDimensionCache의 실제 값이 변경되었는지 확인
+      const hasChanged = Object.entries(appDimensionCache).some(([key, val]) => 
+          appDimension[key as keyof appDimensionType] !== val
+      );
+      if (hasChanged) {
+          setAppDimension(appDimensionCache);
+      }
+  }, [appDimensionCache, appDimension]);
 
   useEffect(() => {
+
     const eventListener = AuthEventEmitter.addListener(
       AuthEvents.AUTH_STATE_CHANGED,
       event => {
@@ -103,7 +143,6 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
         // }
       }
     );
-
     return () => {
       eventListener.remove();
     };
@@ -225,7 +264,8 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
         loading, setLoading, 
         defaultMapZoomLevel, setDefaultMapZoomLevel,
         cellularOn, setCellularOn,
-        wifiOn, setWifiOn }
+        wifiOn, setWifiOn,
+        appDimension }
       }>
       {children}
     </AuthContext.Provider>

@@ -52,7 +52,7 @@ const StaticTabbar: React.FC<Props> = ({
 
   const transitionDuration = transitionSpeed || null;
 
-  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory } = useAuth();
+  const { setActiveTab, tabHistory, setTabHistory } = useAuth();
 
   useEffect(() => {
     onPress(defaultActiveTabIndex, true);
