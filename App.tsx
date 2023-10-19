@@ -27,11 +27,12 @@ import LoaderComponent from './Components/Loader';
 
 function App(): JSX.Element {
 
-  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory, loading, setLoading } = useAuth();
+  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory, loading, setLoading, cellularOn, setCellularOn, wifiOn, setWifiOn } = useAuth();
   
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
         if (state.type !== 'cellular' && state.type !== 'wifi') {
+            
             Alert.alert(
               "Needs Internet Connection",
               "Please turn on Cellular data or Wifi.",
@@ -49,6 +50,8 @@ function App(): JSX.Element {
               } }],
               { cancelable: false }
             );
+        }else {
+          console.log(state)
         }
     });
 
@@ -74,10 +77,10 @@ function App(): JSX.Element {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <StatusBar/>
-      {/* <LoginComponent/> */}
+      <LoginComponent/>
       {loading ? <LoaderComponent/>:<></> }
       {
-        !user.uid ? (
+        user.uid ? (
           <>
             <View style={styles.mainContent}>
               {renderTabContent()}

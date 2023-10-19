@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Button, View, TouchableOpacity, Text, StyleSheet, Alert, Linking, PermissionsAndroid } from 'react-native';
-import NaverMapView, { Coord, Marker, Polyline } from 'react-native-nmap-fork1';
-import Geolocation from 'react-native-geolocation-service';
+import NaverMapView, { Coord, Marker, NaverMapViewInstance, Polyline } from 'react-native-nmap-fork1';
+import Geolocation, { GeoPosition } from 'react-native-geolocation-service';
 import { Ionicons, MaterialCommunityIcons } from '../../Components/IconSets';
 import ActionButton from 'react-native-action-button-fork1';
 import IntentLauncher from 'react-native-intent-launcher-fork1';
@@ -12,26 +12,25 @@ import MapSettingsModalComponent from './mapSettingsModal';
 
 const MapComponent = () => {
     const [location, setLocation] = useState<Coord>({ latitude: 37.35882350130591, longitude: 127.10469231924353 });
-    const [init, setInit] = useState<boolean>(true)
     const [lastTouchTime, setLastTouchTime] = useState<number | null>(null);
     const [region, setRegion] = useState<Region>({"contentRegion": [{"latitude": 36.43313265533338, "longitude": 127.40861266544789}, {"latitude": 36.44320541782096, "longitude": 127.40861266544789}, {"latitude": 36.44320541782096, "longitude": 127.41719573454998}, {"latitude": 36.43313265533338, "longitude": 127.41719573454998}, {"latitude": 36.43313265533338, "longitude": 127.40861266544789}], "coveringRegion": [{"latitude": 36.43313265533338, "longitude": 127.40861266544789}, {"latitude": 36.44320541782096, "longitude": 127.40861266544789}, {"latitude": 36.44320541782096, "longitude": 127.41719573454998}, {"latitude": 36.43313265533338, "longitude": 127.41719573454998}, {"latitude": 36.43313265533338, "longitude": 127.40861266544789}], "latitude": 36.43816920000003, "longitude": 127.41290420000009, "zoom": 16});
+    const mapView = useRef<NaverMapViewInstance>(null);
+    
     // 현재 표시되어야 하는 deviceid를 저장하는 상태
     const [showDeviceId, setShowDeviceId] = useState<string | null>(null);
-    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, isMapSettingsModalVisible, setMapSettingsModalVisible, tabHistory, setTabHistory } = useAuth();
-    
+    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, isMapSettingsModalVisible, setMapSettingsModalVisible, tabHistory, setTabHistory, defaultMapZoomLevel, setDefaultMapZoomLevel, cellularOn, setCellularOn, wifiOn, setWifiOn } = useAuth();
+    const [showUpdateLocationButton, setShowUpdateLocationButton] = useState(false);
+
     useEffect(() => {
         const watchId = Geolocation.watchPosition(
             position => {
                 const { latitude, longitude } = position.coords;
-                // 사용자가 마지막으로 지도를 터치한 시점에서 2.5초가 지나지 않았다면 위치를 업데이트 하지 않는다. 또는 맵 종류 세팅중일때
-                if (lastTouchTime && Date.now() - lastTouchTime < 2500 && !init) {
+                // 사용자가 마지막으로 지도를 터치한 시점에서 2.5초가 지나지 않았다면 위치를 업데이트 하지 않는다.
+                if (lastTouchTime && Date.now() - lastTouchTime < 2500) {
                     return;
                 }
-
-                setLocation({ latitude, longitude });
-                if (init) {
-                    setInit(!init)
-                }
+                mapView.current?.animateToCoordinate({ latitude, longitude });
+                setLocation({ latitude, longitude })
             },
             (error) => {
                 if (error.code === 2) { // 위치 서비스가 사용 불가능한 경우
@@ -59,7 +58,7 @@ const MapComponent = () => {
               },
             {
                 enableHighAccuracy: true,
-                interval: 1500,
+                interval: 1000,
                 distanceFilter: 0,
                 forceRequestLocation: true,
                 showLocationDialog: true,
@@ -71,15 +70,10 @@ const MapComponent = () => {
         };
     }, [lastTouchTime]);
 
-    const handleTouch = () => {
-        
-    }
-
     const handleOnCameraChange = (cameraChangeEvent: Region) => {
-        // console.log(cameraChangeEvent)
         // 사용자가 지도를 터치할 때마다 현재 시간을 저장한다.
         setLastTouchTime(Date.now());
-        setRegion(cameraChangeEvent)
+        setRegion(cameraChangeEvent);
     }
 
     const isInsideMap = (deviceCoord: Coord, mapBounds: Coord[]) => {
@@ -109,16 +103,47 @@ const MapComponent = () => {
         }
     
         return adjustedCoord;
-    };    
+    };
+
+    const moveToCurrentLocation = async () => {
+        try {
+            const position = await getCurrentPosition();
+            const { latitude, longitude } = position.coords;
+            
+            // 맵의 중심을 현재 위치로 이동
+            mapView.current?.animateToCoordinate({ latitude, longitude });
+            
+            setShowUpdateLocationButton(false)
+        } catch (error) {
+            console.error("Error fetching current position:", error);
+        }
+    };
+    
+    const getCurrentPosition = (): Promise<GeoPosition> => {
+        return new Promise((resolve, reject) => {
+            Geolocation.getCurrentPosition(
+                position => resolve(position),
+                error => reject(error),
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 1000,
+                    forceRequestLocation: true
+                }
+            );
+        });
+    };
 
     const userMarker = useMemo(() => {
-        if (!location) return null;
+        if (!mapView.current || !mapView.current.props.center) return null;
+        
+        const { zoom, ...rest } = mapView.current.props.center;
         return (
-            <Marker coordinate={location} height={25} width={25} anchor={{ x: 0.5, y: 0.5 }}>
+            <Marker coordinate={rest} height={25} width={25} anchor={{ x: 0.5, y: 0.5 }}>
                 <MaterialCommunityIcons name="circle-slice-8" size={25} color="red" />
             </Marker>
         );
-    }, [location]);
+    }, [mapView.current?.props.center]);
 
     const deviceMarkers = useMemo(() => {
         if (!fetchedWData || fetchedWData.length === 0) return null;
@@ -196,18 +221,42 @@ const MapComponent = () => {
                 compass={true}
                 scaleBar={true}
                 nightMode={false}
-                zoomControl={true}
+                zoomControl={false}
                 logoMargin={{left: -50}}
                 mapType={mapType}
                 style={{ height:"100%" }}
-                center={{ ...location, zoom: 13 }}
-                onTouch={handleTouch}
+                center={{ ...location, zoom: defaultMapZoomLevel }}
                 onCameraChange={handleOnCameraChange}
+                onTouch={()=>(!showUpdateLocationButton)&& setShowUpdateLocationButton(true)}
+                ref={mapView}
             >
                 {userMarker}
                 {deviceMarkers}
                 {distanceLines}
+                
             </NaverMapView>
+            <View style={styles.upperContainer}>
+                <View style={styles.networkState}>
+                    <View style={styles.networkState1}>
+                        <Text style={styles.networkStateText}>WiFi</Text>
+                        <MaterialCommunityIcons name="signal-variant" color={'#000'} size={13}/>
+                    </View>
+                    <View style={styles.networkState2}>
+                        <Text style={styles.networkStateText}>Cellular</Text>
+                        <MaterialCommunityIcons name="signal" color={'#000'} size={13}/>
+                    </View>
+                </View>
+                {
+                    showUpdateLocationButton && (
+                        <TouchableOpacity
+                            style={styles.updateLocationButton}
+                            onPress={moveToCurrentLocation}>
+                            <MaterialCommunityIcons name="navigation-variant" color={Theme.COLORS.PRIMARY} size={20}/>
+                            <Text style={styles.updateLocationButtonText}> Back to My Location</Text>
+                        </TouchableOpacity>
+                    )
+                }
+            </View>
             
             <ActionButton 
                 buttonColor={`rgba(${r}, ${g}, ${b}, 0.5)`}>
@@ -284,11 +333,63 @@ const styles = StyleSheet.create({
         padding: 2,
         borderRadius: 3,
         borderColor: 'gray',
-        borderWidth: 0.5
+        borderWidth: 0.5,
     },
     distanceText: {
         fontSize: 10,
         color: 'black'
+    },
+    upperContainer: {
+        position: 'absolute',
+        display:'flex',
+        flexDirection:'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%'
+    },
+    updateLocationButton: {
+        width:'auto',
+        backgroundColor: Theme.COLORS.SECONDARY,
+        flexDirection:'row',
+        padding: 10,
+        marginTop: 30,
+        marginRight: 30,
+        borderRadius: 20,
+        borderColor: 'gray',
+        borderWidth: 0.5,
+    },
+    updateLocationButtonText: {
+        fontSize: 14,
+        color: 'black',
+    },
+    networkState: {
+        width:'auto',
+        flexDirection:'row',
+        marginTop: 30,
+        marginLeft: 30,
+    },
+    networkState1: {
+        width:'auto',
+        flexDirection:'row',
+        backgroundColor: Theme.COLORS.NETWORK_STATUS_ON,
+        padding: 5,
+        borderRadius: 20,
+        borderColor: 'gray',
+        borderWidth: 0.5,
+    },
+    networkState2: {
+        width:'auto',
+        flexDirection:'row',
+        backgroundColor: Theme.COLORS.NETWORK_STATUS_ON,
+        padding: 5,
+        borderRadius: 20,
+        borderColor: 'gray',
+        borderWidth: 0.5,
+        marginLeft: 10
+    },
+    networkStateText: {
+        fontSize: 10,
+        color: 'black',
     }
 });
 

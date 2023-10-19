@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Dimensions, ScrollView, Image, ImageBackground, Platform, View, Modal, TouchableOpacity, TextInput, Text, Button} from 'react-native';
 import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../Components/IconSets';
-
-import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import ReactNativeSettingsPage, { CheckRow, NavigateRow, SectionRow, SliderRow, SwitchRow } from 'react-native-settings-page-fork1'
 import { height, useAuth, width } from '../../Navigation/AuthContext';
 import Theme from '../../Constants/Theme';
 
 const MapSettingsModalComponent: React.FC = () => {
 
-    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isMapSettingsModalVisible, setMapSettingsModalVisible, loading, setLoading  } = useAuth();
+    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isMapSettingsModalVisible, setMapSettingsModalVisible, loading, setLoading, defaultMapZoomLevel, setDefaultMapZoomLevel, setMapZoomLevelFirebase  } = useAuth();
 
     return (
         <Modal
@@ -25,7 +24,31 @@ const MapSettingsModalComponent: React.FC = () => {
             >
                 <View style={styles.modalView}>
                     <ScrollView persistentScrollbar={true} >
-                        
+                        <ReactNativeSettingsPage>
+                            <SectionRow text='Map Settings'>
+                                <SwitchRow 
+                                    text='See all device ids' 
+                                    iconName='eye'
+                                    _value={true}
+                                    _onValueChange={() => { }} />
+                                <SliderRow 
+                                    text={`Set Default Map Zoom Level (0~21) : ${defaultMapZoomLevel}`}
+                                    iconName='expand'
+                                    _color='#000'
+                                    _min={0}
+                                    _max={21}
+                                    _value={defaultMapZoomLevel}
+                                    _onValueChange={()=>{}}
+                                    _onSlidingComplete={(e)=>setDefaultMapZoomLevel(e)} />
+                                <NavigateRow
+                                    text='save & close'
+                                    iconName='save'
+                                    onPressCallback={async () => {
+                                        await setMapZoomLevelFirebase();
+                                        setMapSettingsModalVisible(false);
+                                    }}/>
+                            </SectionRow>
+                        </ReactNativeSettingsPage>
                     </ScrollView>
                 </View>
             </TouchableOpacity>
@@ -43,7 +66,7 @@ const styles = StyleSheet.create({
     modalView: {
         position:'absolute',
         width: "90%",
-        height: "90%",
+        height: "40%",
         padding: 20,
         backgroundColor:Theme.COLORS.WHITE,
         borderRadius: 10,

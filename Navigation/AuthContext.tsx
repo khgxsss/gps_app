@@ -15,6 +15,7 @@ interface AuthContextType {
     setFetchedWData: (value: DeviceDataType[]) => void;
     handleSignIn: () => void;
     handleSignOut: () => void;
+    setMapZoomLevelFirebase: () => void;
     MAP_TYPE: object;
     tabHistory: number[];
     setTabHistory:(value: number[]) => void;
@@ -24,6 +25,12 @@ interface AuthContextType {
     setMapSettingsModalVisible: (value: boolean) => void;
     loading: boolean;
     setLoading: (value: boolean) => void;
+    defaultMapZoomLevel: number;
+    setDefaultMapZoomLevel: (value: number) => void;
+    wifiOn: boolean;
+    setWifiOn: (value: boolean) => void;
+    cellularOn: boolean;
+    setCellularOn: (value: boolean) => void;
 }
 
 interface AuthProviderProps {
@@ -82,6 +89,9 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   const [isWifiModalVisible, setWifiModalVisible] = useState(false);
   const [isMapSettingsModalVisible, setMapSettingsModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [defaultMapZoomLevel, setDefaultMapZoomLevel] = useState<number>(13);
+  const [wifiOn, setWifiOn] = useState<boolean>(false);
+  const [cellularOn, setCellularOn] = useState<boolean>(false);
 
   useEffect(() => {
     const eventListener = AuthEventEmitter.addListener(
@@ -108,33 +118,29 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   const handleSignIn = async () => {
     try {
       const signedInUser = await Auth.signIn(config);
-      console.log(signedInUser)
       setUser(signedInUser);
   
       // Firestore에서 사용자 확인
       const userDocRef = firestore().collection('users').doc(signedInUser.uid);
   
       const userDoc = await userDocRef.get();
-      console.log(userDoc.data())
   
-      // 사용자가 데이터베이스에 없으면 추가, 있으면 타임스탬프 갱신
+      // 사용자가 데이터베이스에 없으면 추가, 있으면 타임스탬프, Map Zoom 갱신
       if (!userDoc.exists) {
         await userDocRef.set({
           about: '', // 기본값으로 빈 문자열 사용
           devices: [], // 기본값으로 빈 배열 사용
           name: signedInUser.displayName || '',
           email: signedInUser.email,
-          lastSignInTimestamp: signedInUser.lastSignInTimestamp
+          lastSignInTimestamp: signedInUser.lastSignInTimestamp,
+          mapZoomLevel: 13
         });
       }else {
-        await userDocRef.set({
-          about: userDoc.data()?.about,
-          devices: userDoc.data()?.devices,
-          name: userDoc.data()?.name,
-          email: userDoc.data()?.email,
-          lastSignInTimestamp: signedInUser.lastSignInTimestamp
+        await userDocRef.update({
+          lastSignInTimestamp: signedInUser.lastSignInTimestamp,
         });
       }
+      setDefaultMapZoomLevel(userDoc.data()?.mapZoomLevel,)
   
     } catch (err) {
       console.log(err);
@@ -170,8 +176,57 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
     }
   };
 
+  const getUserInfo = async () => {
+    try {
+      const signedInUser = await Auth.signIn(config);
+      setUser(signedInUser);
+  
+      // Firestore에서 사용자 확인
+      const userDocRef = firestore().collection('users').doc(signedInUser.uid);
+  
+      const userDoc = await userDocRef.get();
+      console.log(userDoc.data())
+  
+    } catch (err) {
+      console.log(err);
+    }
+  };  
+
+  const setMapZoomLevelFirebase = async () => {
+    try {
+      // Firestore에서 사용자 확인
+      const userDocRef = firestore().collection('users').doc(user.uid);
+  
+      const userDoc = await userDocRef.get();
+  
+      // Map Zoom 갱신
+      if (userDoc.exists) {
+        await userDocRef.update({
+          mapZoomLevel: defaultMapZoomLevel,
+        });
+      }
+  
+    } catch (err) {
+      console.log(err);
+    }
+  };   
+
   return (
-    <AuthContext.Provider value={{ activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory, isWifiModalVisible, setWifiModalVisible, isMapSettingsModalVisible, setMapSettingsModalVisible, loading, setLoading }}>
+    <AuthContext.Provider value={
+      { activeTab, setActiveTab, 
+        fetchedWData, setFetchedWData, 
+        mapType, setMapType, 
+        user, setUser, 
+        handleSignIn, handleSignOut, setMapZoomLevelFirebase,
+        MAP_TYPE, 
+        tabHistory, setTabHistory, 
+        isWifiModalVisible, setWifiModalVisible, 
+        isMapSettingsModalVisible, setMapSettingsModalVisible, 
+        loading, setLoading, 
+        defaultMapZoomLevel, setDefaultMapZoomLevel,
+        cellularOn, setCellularOn,
+        wifiOn, setWifiOn }
+      }>
       {children}
     </AuthContext.Provider>
   );

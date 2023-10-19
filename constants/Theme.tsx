@@ -24,7 +24,9 @@ export default {
     BLACK: '#000',
     RED: '#fc0303',
     DEVICE_ON: '#11fc05',
-    DEVICE_OFF: '#979797'
+    DEVICE_OFF: '#979797',
+    NETWORK_STATUS_ON: 'rgba(0, 255, 205, 0.5)',
+    NETWORK_STATUS_OFF: 'rgba(160, 146, 154, 0.5)',
   },
   SIZES: {
     BLOCK_SHADOW_RADIUS: 2,

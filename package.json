@@ -29,6 +29,7 @@
     "react-native-onboarding-swiper": "^1.2.0",
     "react-native-paper": "^5.10.6",
     "react-native-sensors": "^7.3.6",
+    "react-native-settings-page-fork1": "^1.0.0",
     "react-native-svg": "^13.14.0",
     "react-native-svg-transformer": "^1.1.0",
     "react-native-vector-icons": "^10.0.0",
