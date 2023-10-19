@@ -37,7 +37,7 @@ function App(): JSX.Element {
             Alert.alert(
               "Needs Internet Connection",
               "Please turn on Cellular data or Wifi.",
-              [{ text: "Confirm",
+              [{ text: "go to Settings Page",
               onPress: () => {
                 if (Platform.OS === 'ios') {
                     // iOS 설정 화면으로 이동
@@ -53,6 +53,23 @@ function App(): JSX.Element {
             );
         }else {
           console.log(state)
+        }
+        if (state.isInternetReachable) {
+          switch (state.type) {
+            case 'wifi':
+              setWifiOn(true)
+              setCellularOn(false)
+              break
+            case 'cellular':
+              setCellularOn(true)
+              setWifiOn(false)
+              break
+            default:
+              break;
+          }
+        }else {
+          setWifiOn(false)
+          setCellularOn(false)
         }
     });
 

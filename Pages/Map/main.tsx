@@ -237,11 +237,11 @@ const MapComponent = () => {
             </NaverMapView>
             <View style={styles.upperContainer}>
                 <View style={styles.networkState}>
-                    <View style={styles.networkState1}>
+                    <View style={{...styles.networkState1, backgroundColor:wifiOn?Theme.COLORS.NETWORK_STATUS_ON:Theme.COLORS.NETWORK_STATUS_OFF}}>
                         <Text style={styles.networkStateText}>WiFi</Text>
                         <MaterialCommunityIcons name="signal-variant" color={'#000'} size={13}/>
                     </View>
-                    <View style={styles.networkState2}>
+                    <View style={{...styles.networkState2, backgroundColor:cellularOn?Theme.COLORS.NETWORK_STATUS_ON:Theme.COLORS.NETWORK_STATUS_OFF}}>
                         <Text style={styles.networkStateText}>Cellular</Text>
                         <MaterialCommunityIcons name="signal" color={'#000'} size={13}/>
                     </View>
@@ -371,7 +371,6 @@ const styles = StyleSheet.create({
     networkState1: {
         width:'auto',
         flexDirection:'row',
-        backgroundColor: Theme.COLORS.NETWORK_STATUS_ON,
         padding: 5,
         borderRadius: 20,
         borderColor: 'gray',
@@ -380,7 +379,6 @@ const styles = StyleSheet.create({
     networkState2: {
         width:'auto',
         flexDirection:'row',
-        backgroundColor: Theme.COLORS.NETWORK_STATUS_ON,
         padding: 5,
         borderRadius: 20,
         borderColor: 'gray',
