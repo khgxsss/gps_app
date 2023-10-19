@@ -2,18 +2,19 @@ import React, { useEffect } from 'react';
 import {
   Alert,
   BackHandler,
+  Dimensions,
   Linking,
   Platform,
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   useColorScheme,
   View,
 } from 'react-native';
+import { SafeAreaProvider, useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
 import NetInfo from "@react-native-community/netinfo";
 import { MaterialCommunityIcons } from './Components/IconSets';
 
-import { AuthProvider, componentHeight, height, useAuth } from './Navigation/AuthContext';
+import { AuthProvider, useAuth } from './Navigation/AuthContext';
 import IntentLauncher from 'react-native-intent-launcher-fork1';
 
 import Tabbar from './Navigation/TabBar';
@@ -27,7 +28,7 @@ import LoaderComponent from './Components/Loader';
 
 function App(): JSX.Element {
 
-  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory, loading, setLoading, cellularOn, setCellularOn, wifiOn, setWifiOn } = useAuth();
+  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory, loading, setLoading, cellularOn, setCellularOn, wifiOn, setWifiOn, appDimension } = useAuth();
   
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
@@ -73,16 +74,17 @@ function App(): JSX.Element {
         return <></>;
     }
   };
+
+  
 // Login dev용으로 전환
   return (
-    <SafeAreaView style={styles.safeAreaView}>
-      <StatusBar/>
+    <View style={{...styles.safeAreaView, height: appDimension.appHeight}}>
       <LoginComponent/>
       {loading ? <LoaderComponent/>:<></> }
       {
         user.uid ? (
           <>
-            <View style={styles.mainContent}>
+            <View style={{...styles.mainContent, height:appDimension.componentHeight}}>
               {renderTabContent()}
             </View>
             <Tabbar
@@ -99,17 +101,15 @@ function App(): JSX.Element {
           <></>
         )
       }
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safeAreaView: {
-    height:height,
     backgroundColor: '#fff'
   },
   mainContent: {
-    height: componentHeight
   },
   labelStyle: {
     color: '#949494',
@@ -140,9 +140,11 @@ const tabs = [
 
 const AppWrapper = () => {
   return (
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <App/>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 };
 
