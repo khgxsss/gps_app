@@ -4,11 +4,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../Components/IconSets';
 
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-import { height, useAuth, width } from '../../Navigation/AuthContext';
+import { useAuth } from '../../Navigation/AuthContext';
 import Theme from '../../Constants/Theme';
 
 import WifiManager, { WifiEntry, WiFiObject } from 'react-native-wifi-reborn';
-import ProgressBar from 'react-native-progress/Bar';
 
 const WifiModalComponent: React.FC = () => {
 
@@ -17,7 +16,6 @@ const WifiModalComponent: React.FC = () => {
     const [selectedWifi, setSelectedWifi] = useState<WiFiObject>();
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [password, setPassword] = useState("");
-    const [progress, setProgress] = useState(0);
     const [connectedWifi, setConnectedwifi] = useState<string>('');
 
     useEffect(() => {
@@ -51,12 +49,10 @@ const WifiModalComponent: React.FC = () => {
 
     const fetchWifiList = async () => {
         setLoading(true);
-        setProgress(0.33); // 1단계
         try {
             const list:WifiEntry[] = await WifiManager.loadWifiList();
             setWifiList(list);
             setLoading(false);
-            setProgress(0.66); // 2단계
         } catch (e) {
             console.error(e);
             setLoading(false);
@@ -65,12 +61,10 @@ const WifiModalComponent: React.FC = () => {
 
     const reFetchWifiList = async () => {
         setLoading(true);
-        setProgress(0.33); // 1단계
         try {
             const list:WifiEntry[] = await WifiManager.reScanAndLoadWifiList();
             setWifiList(list);
             setLoading(false);
-            setProgress(0.66); // 2단계
         } catch (e) {
             console.error(e);
             setLoading(false);
@@ -94,7 +88,6 @@ const WifiModalComponent: React.FC = () => {
           console.error(e);
         }
         setLoading(false);
-        setProgress(1); // 3단계
     };
 
     return (
@@ -110,8 +103,7 @@ const WifiModalComponent: React.FC = () => {
                 style={styles.modalContainer}
                 activeOpacity={1}
             >
-                <View style={styles.modalView}>
-                    <ProgressBar progress={progress} width={null} color={Theme.COLORS.INFO} unfilledColor={Theme.COLORS.DEFAULT} style={{padding:4, margin:50}} borderWidth={0}/>                    
+                <View style={styles.modalView}>                  
                     <ScrollView persistentScrollbar={true} >
                         <TouchableOpacity activeOpacity={1}>
                         {
