@@ -16,7 +16,7 @@ interface AuthContextType {
     setFetchedWData: (value: DeviceDataType[]) => void;
     handleSignIn: () => void;
     handleSignOut: () => void;
-    setMapZoomLevelFirebase: () => void;
+    setMapLocationSettingsFirebase: () => void;
     MAP_TYPE: object;
     tabHistory: number[];
     setTabHistory:(value: number[]) => void;
@@ -33,6 +33,8 @@ interface AuthContextType {
     cellularOn: boolean;
     setCellularOn: (value: boolean) => void;
     appDimension: appDimensionType;
+    locationSaved: locationSavedType;
+    setLocationSaved: (value: locationSavedType) => void;
 }
 
 interface AuthProviderProps {
@@ -46,6 +48,19 @@ interface appDimensionType {
   y?: number;
   componentHeight:number;
   tabHeight:number;
+}
+
+interface locationSavedType extends Coord  {
+  mapZoomLevel: number;
+}
+
+interface deviceType {
+  userId: string;
+  userName: string;
+  regTime: string;
+  device: string;
+  deviceImg: string;
+  online: boolean;
 }
 
 export interface DeviceDataType {
@@ -86,6 +101,8 @@ const initialAppDimension: appDimensionType = {
   componentHeight: 0
 };
 
+const initialSavedLocation: locationSavedType = {latitude: 37.35882350130591, longitude: 127.10469231924353, mapZoomLevel: 13}
+
 // only for dev
 const test_data:DeviceDataType[] = [
   { deviceid: "40ca63fffe1deca5", location: { latitude: 36.4383755, longitude: 127.4248978 }, receivedtime: Date.now()+10000},
@@ -110,6 +127,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   const [wifiOn, setWifiOn] = useState<boolean>(false);
   const [cellularOn, setCellularOn] = useState<boolean>(false);
   const [appDimension, setAppDimension] = useState<appDimensionType>(initialAppDimension);
+  const [locationSaved, setLocationSaved] = useState<locationSavedType>(initialSavedLocation) // firebase 이용
 
   const safeareadimension = useSafeAreaFrame();
   
@@ -172,14 +190,15 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
           name: signedInUser.displayName || '',
           email: signedInUser.email,
           lastSignInTimestamp: signedInUser.lastSignInTimestamp,
-          mapZoomLevel: 13
+          lastLocation: {latitude: 37.35882350130591, longitude: 127.10469231924353, mapZoomLevel: 13}
         });
       }else {
         await userDocRef.update({
           lastSignInTimestamp: signedInUser.lastSignInTimestamp,
         });
       }
-      setDefaultMapZoomLevel(userDoc.data()?.mapZoomLevel,)
+      setLocationSaved(userDoc.data()?.lastLocation)
+      setDefaultMapZoomLevel(userDoc.data()?.lastLocation.mapZoomLevel,)
   
     } catch (err) {
       console.log(err);
@@ -231,7 +250,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
     }
   };  
 
-  const setMapZoomLevelFirebase = async () => {
+  const setMapLocationSettingsFirebase = async () => {
     try {
       // Firestore에서 사용자 확인
       const userDocRef = firestore().collection('users').doc(user.uid);
@@ -241,14 +260,52 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
       // Map Zoom 갱신
       if (userDoc.exists) {
         await userDocRef.update({
-          mapZoomLevel: defaultMapZoomLevel,
+          lastLocation: locationSaved,
         });
       }
   
     } catch (err) {
       console.log(err);
     }
-  };   
+  };
+
+  // not for use
+  const fetchDevices = async () => {
+    try {
+      const list: deviceType[] = [];
+
+      await firestore()
+        .collection('devices')
+        .where('userId', '==', user.uid)
+        .orderBy('regTime', 'desc')
+        .get()
+        .then((querySnapshot) => {
+          // console.log('Total Devices: ', querySnapshot.size);
+
+          querySnapshot.forEach((doc) => {
+            const {
+              userId,
+              device,
+              deviceImg,
+              regTime,
+              userName,
+            } = doc.data();
+            list.push({
+              userId,
+              userName: 'Test Name',
+              regTime: regTime,
+              device,
+              deviceImg,
+              online: false
+            });
+          });
+        });
+      console.log(list)
+
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <AuthContext.Provider value={
@@ -256,7 +313,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
         fetchedWData, setFetchedWData, 
         mapType, setMapType, 
         user, setUser, 
-        handleSignIn, handleSignOut, setMapZoomLevelFirebase,
+        handleSignIn, handleSignOut, setMapLocationSettingsFirebase,
         MAP_TYPE, 
         tabHistory, setTabHistory, 
         isWifiModalVisible, setWifiModalVisible, 
@@ -265,7 +322,8 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
         defaultMapZoomLevel, setDefaultMapZoomLevel,
         cellularOn, setCellularOn,
         wifiOn, setWifiOn,
-        appDimension }
+        appDimension,
+        locationSaved, setLocationSaved }
       }>
       {children}
     </AuthContext.Provider>

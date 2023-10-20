@@ -10,63 +10,9 @@ import Theme from '../../Constants/Theme';
 import WifiModalComponent from './wifiModal';
 import Images from '../../Constants/Images';
 
-interface deviceType {
-  userId: string;
-  userName: string;
-  regTime: string;
-  device: string;
-  deviceImg: string;
-  online: boolean;
-}
-
 const ProfileComponent = () => {
-  const [devices, setDevices] = useState<deviceType[]>([]);
-  const [loading, setLoading] = useState(true);
 
   const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isWifiModalVisible, setWifiModalVisible  } = useAuth();
-
-  const fetchDevices = async () => {
-    try {
-      const list: deviceType[] = [];
-
-      await firestore()
-        .collection('devices')
-        .where('userId', '==', user.uid)
-        .orderBy('regTime', 'desc')
-        .get()
-        .then((querySnapshot) => {
-          // console.log('Total Devices: ', querySnapshot.size);
-
-          querySnapshot.forEach((doc) => {
-            const {
-              userId,
-              device,
-              deviceImg,
-              regTime,
-              userName,
-            } = doc.data();
-            list.push({
-              userId,
-              userName: 'Test Name',
-              regTime: regTime,
-              device,
-              deviceImg,
-              online: false
-            });
-          });
-        });
-      console.log(list)
-      setDevices(list);
-
-      if (loading) {
-        setLoading(false);
-      }
-
-      console.log('Devices: ', devices);
-    } catch (e) {
-      console.log(e);
-    }
-  };
 
   const getUser = async() => {
     await firestore()
@@ -82,15 +28,6 @@ const ProfileComponent = () => {
 
   const handleDeleteDevice = () => {
     console.log("handle delete device")
-  }
-
-  useEffect(() => {
-    // getUser();
-    fetchDevices();
-  }, []);
-
-  if (loading) {
-    return null;
   }
 
   return (
@@ -144,15 +81,15 @@ const ProfileComponent = () => {
         <View style={styles.optionLine} />
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{flexDirection:'row'}} >
-            {devices.map((device, Index) => (
+            {fetchedWData.map((device, Index) => (
               <View key={Index} style={styles.textContainer}>
-                <Text style={styles.thumb}>{device.device}</Text>
+                <Text style={styles.thumb}>{device.deviceid}</Text>
               </View>
             ))}
           </View>
         </ScrollView>
       </View>
-      <ActionButton buttonColor={Theme.COLORS.LABEL} style={styles.actionButton} renderIcon={active => (<Ionicons name="settings-sharp" color={Theme.COLORS.WHITE} size={25}/>)}>
+      <ActionButton buttonColor={Theme.COLORS.SETINGS_BTN} style={styles.actionButton} renderIcon={active => (<Ionicons name="settings-sharp" color={Theme.COLORS.WHITE} size={25}/>)}>
         <ActionButton.Item buttonColor='#9b59b6' title='Wifi Settings' onPress={() => setWifiModalVisible(true)}>
             <MaterialCommunityIcons name="wifi-cog" color={'#fff'} size={25}/>
         </ActionButton.Item>

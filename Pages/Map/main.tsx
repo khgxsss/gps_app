@@ -5,20 +5,19 @@ import Geolocation, { GeoPosition } from 'react-native-geolocation-service';
 import { Ionicons, MaterialCommunityIcons } from '../../Components/IconSets';
 import ActionButton from 'react-native-action-button-fork1';
 import IntentLauncher from 'react-native-intent-launcher-fork1';
-import { componentHeight, DeviceDataType, Region, useAuth, width } from '../../Navigation/AuthContext';
+import { DeviceDataType, Region, useAuth } from '../../Navigation/AuthContext';
 import Theme from '../../Constants/Theme';
 import { calculateDistance, hexToRgb } from '../../Utils/utils';
 import MapSettingsModalComponent from './mapSettingsModal';
 
 const MapComponent = () => {
-    const [location, setLocation] = useState<Coord>({ latitude: 37.35882350130591, longitude: 127.10469231924353 });
     const [lastTouchTime, setLastTouchTime] = useState<number | null>(null);
     const [region, setRegion] = useState<Region>({"contentRegion": [{"latitude": 36.43313265533338, "longitude": 127.40861266544789}, {"latitude": 36.44320541782096, "longitude": 127.40861266544789}, {"latitude": 36.44320541782096, "longitude": 127.41719573454998}, {"latitude": 36.43313265533338, "longitude": 127.41719573454998}, {"latitude": 36.43313265533338, "longitude": 127.40861266544789}], "coveringRegion": [{"latitude": 36.43313265533338, "longitude": 127.40861266544789}, {"latitude": 36.44320541782096, "longitude": 127.40861266544789}, {"latitude": 36.44320541782096, "longitude": 127.41719573454998}, {"latitude": 36.43313265533338, "longitude": 127.41719573454998}, {"latitude": 36.43313265533338, "longitude": 127.40861266544789}], "latitude": 36.43816920000003, "longitude": 127.41290420000009, "zoom": 16});
     const mapView = useRef<NaverMapViewInstance>(null);
     
     // 현재 표시되어야 하는 deviceid를 저장하는 상태
     const [showDeviceId, setShowDeviceId] = useState<string | null>(null);
-    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, isMapSettingsModalVisible, setMapSettingsModalVisible, tabHistory, setTabHistory, defaultMapZoomLevel, setDefaultMapZoomLevel, cellularOn, setCellularOn, wifiOn, setWifiOn } = useAuth();
+    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, isMapSettingsModalVisible, setMapSettingsModalVisible, tabHistory, setTabHistory, defaultMapZoomLevel, setDefaultMapZoomLevel, cellularOn, setCellularOn, wifiOn, setWifiOn, locationSaved, setLocationSaved, setMapLocationSettingsFirebase } = useAuth();
     const [showUpdateLocationButton, setShowUpdateLocationButton] = useState(false);
 
     useEffect(() => {
@@ -30,11 +29,13 @@ const MapComponent = () => {
                     return;
                 }
                 mapView.current?.animateToCoordinate({ latitude, longitude });
-                setLocation({ latitude, longitude })
+                setLocationSaved({...locationSaved, latitude:latitude, longitude:longitude })
+                setShowUpdateLocationButton(false)
             },
             (error) => {
                 if (error.code === 2) { // 위치 서비스가 사용 불가능한 경우
                     // 위치 서비스 활성화 요청
+                    setShowUpdateLocationButton(false)
                     Alert.alert(
                         'GPS Required',
                         'Please turn on GPS for better experience',
@@ -67,6 +68,7 @@ const MapComponent = () => {
 
         return () => {
             Geolocation.clearWatch(watchId);
+            setMapLocationSettingsFirebase()
         };
     }, [lastTouchTime]);
 
@@ -179,9 +181,9 @@ const MapComponent = () => {
     }
 
     const distanceLines = useMemo(() => {
-        if (!location || !fetchedWData) return null;
-        const userLat = location.latitude!;
-        const userLon = location.longitude!;
+        if (!locationSaved || !fetchedWData) return null;
+        const userLat = locationSaved.latitude!;
+        const userLon = locationSaved.longitude!;
         return fetchedWData.map((device: DeviceDataType, i) => {
             const deviceLat = device.location.latitude!;
             const deviceLon = device.location.longitude!;
@@ -193,7 +195,7 @@ const MapComponent = () => {
                     <View key = {i}>
                         <Polyline
                             key={`lineP_${i}`}
-                            coordinates={[location, device.location]}
+                            coordinates={[{latitude: locationSaved.latitude,longitude: locationSaved.longitude}, device.location]}
                             strokeWidth={2}
                             strokeColor="#ff641c"/>
                         <Marker 
@@ -211,7 +213,7 @@ const MapComponent = () => {
             }
             return null;
         });
-    }, [location, fetchedWData]);
+    }, [locationSaved, fetchedWData]);
 
     return (
         <View style={styles.allContainer}>
@@ -225,7 +227,7 @@ const MapComponent = () => {
                 logoMargin={{left: -50}}
                 mapType={mapType}
                 style={{ height:"100%" }}
-                center={{ ...location, zoom: defaultMapZoomLevel }}
+                center={{latitude: locationSaved.latitude, longitude:locationSaved.longitude, zoom: locationSaved.mapZoomLevel}}
                 onCameraChange={handleOnCameraChange}
                 onTouch={()=>(!showUpdateLocationButton)&& setShowUpdateLocationButton(true)}
                 ref={mapView}
@@ -259,7 +261,7 @@ const MapComponent = () => {
             </View>
             
             <ActionButton 
-                buttonColor={`rgba(${r}, ${g}, ${b}, 0.5)`}>
+                buttonColor={Theme.COLORS.SETINGS_BTN}>
                 <ActionButton.Item 
                     buttonColor={Theme.COLORS.BUTTON_COLOR} 
                     title={'Settings'}
@@ -299,8 +301,6 @@ const MapComponent = () => {
         </View>
     );
 };
-
-const { r, g, b } = hexToRgb(Theme.COLORS.LABEL);
 
 const styles = StyleSheet.create({
     allContainer: {

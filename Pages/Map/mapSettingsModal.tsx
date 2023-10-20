@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Dimensions, ScrollView, Image, ImageBackground, Platform, View, Modal, TouchableOpacity, TextInput, Text, Button} from 'react-native';
 import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../Components/IconSets';
 import ReactNativeSettingsPage, { CheckRow, NavigateRow, SectionRow, SliderRow, SwitchRow } from 'react-native-settings-page-fork1'
-import { height, useAuth, width } from '../../Navigation/AuthContext';
+import { useAuth } from '../../Navigation/AuthContext';
 import Theme from '../../Constants/Theme';
 
 const MapSettingsModalComponent: React.FC = () => {
 
-    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isMapSettingsModalVisible, setMapSettingsModalVisible, loading, setLoading, defaultMapZoomLevel, setDefaultMapZoomLevel, setMapZoomLevelFirebase  } = useAuth();
+    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isMapSettingsModalVisible, setMapSettingsModalVisible, loading, setLoading, defaultMapZoomLevel, setDefaultMapZoomLevel, locationSaved, setLocationSaved, setMapLocationSettingsFirebase  } = useAuth();
 
     return (
         <Modal
@@ -23,7 +23,7 @@ const MapSettingsModalComponent: React.FC = () => {
                 activeOpacity={1}
             >
                 <View style={styles.modalView}>
-                    <ScrollView persistentScrollbar={true} >
+                    <ScrollView persistentScrollbar={false} >
                         <ReactNativeSettingsPage>
                             <SectionRow text='Map Settings'>
                                 <SwitchRow 
@@ -32,19 +32,19 @@ const MapSettingsModalComponent: React.FC = () => {
                                     _value={true}
                                     _onValueChange={() => { }} />
                                 <SliderRow 
-                                    text={`Set Default Map Zoom Level (0~21) : ${defaultMapZoomLevel}`}
+                                    text={`Set Default Map Zoom Level (1~20) : ${locationSaved.mapZoomLevel}`}
                                     iconName='expand'
                                     _color='#000'
-                                    _min={0}
-                                    _max={21}
-                                    _value={defaultMapZoomLevel}
+                                    _min={1}
+                                    _max={20}
+                                    _value={locationSaved.mapZoomLevel}
                                     _onValueChange={()=>{}}
-                                    _onSlidingComplete={(e)=>setDefaultMapZoomLevel(e)} />
+                                    _onSlidingComplete={(e)=>setLocationSaved({...locationSaved,mapZoomLevel:e})} />
                                 <NavigateRow
                                     text='save & close'
                                     iconName='save'
                                     onPressCallback={async () => {
-                                        await setMapZoomLevelFirebase();
+                                        await setMapLocationSettingsFirebase();
                                         setMapSettingsModalVisible(false);
                                     }}/>
                             </SectionRow>

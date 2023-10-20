@@ -32,28 +32,6 @@ function App(): JSX.Element {
   
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
-        if (state.type !== 'cellular' && state.type !== 'wifi') {
-            
-            Alert.alert(
-              "Needs Internet Connection",
-              "Please turn on Cellular data or Wifi.",
-              [{ text: "go to Settings Page",
-              onPress: () => {
-                if (Platform.OS === 'ios') {
-                    // iOS 설정 화면으로 이동
-                    Linking.openURL('app-settings:');
-                } else {
-                  // 안드로이드 Wi-Fi 설정 화면으로 이동
-                  IntentLauncher.startActivity({
-                      action: 'android.settings.WIFI_SETTINGS',
-                  });
-                }
-              } }],
-              { cancelable: false }
-            );
-        }else {
-          console.log(state)
-        }
         if (state.isInternetReachable) {
           switch (state.type) {
             case 'wifi':
@@ -70,6 +48,27 @@ function App(): JSX.Element {
         }else {
           setWifiOn(false)
           setCellularOn(false)
+          Alert.alert(
+            "Needs Internet Connection",
+            "Please turn on Cellular data or Wifi.",
+            [{ text: "go to Settings Page",
+            onPress: () => {
+              if (Platform.OS === 'ios') {
+                  // iOS 설정 화면으로 이동
+                  Linking.openURL('app-settings:');
+              } else {
+                // 안드로이드 Wi-Fi 설정 화면으로 이동
+                IntentLauncher.startActivity({
+                    action: 'android.settings.WIFI_SETTINGS',
+                });
+              }
+            } },{
+              text: 'Ok',
+              onPress: () => {
+              }
+            }],
+            { cancelable: false }
+          );
         }
     });
 
