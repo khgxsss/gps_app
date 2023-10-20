@@ -35,6 +35,10 @@ interface AuthContextType {
     appDimension: appDimensionType;
     locationSaved: locationSavedType;
     setLocationSaved: (value: locationSavedType) => void;
+    seeAllDevices: boolean;
+    setSeeAllDevices: (value: boolean) => void;
+    seeDistanceLines: boolean,
+    setSeeDistanceLines: (value: boolean) => void;
 }
 
 interface AuthProviderProps {
@@ -127,7 +131,9 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   const [wifiOn, setWifiOn] = useState<boolean>(false);
   const [cellularOn, setCellularOn] = useState<boolean>(false);
   const [appDimension, setAppDimension] = useState<appDimensionType>(initialAppDimension);
-  const [locationSaved, setLocationSaved] = useState<locationSavedType>(initialSavedLocation) // firebase 이용
+  const [locationSaved, setLocationSaved] = useState<locationSavedType>(initialSavedLocation); // firebase 이용
+  const [seeAllDevices, setSeeAllDevices] = useState<boolean>(false);
+  const [seeDistanceLines, setSeeDistanceLines] = useState<boolean>(false);
 
   const safeareadimension = useSafeAreaFrame();
   
@@ -335,7 +341,9 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
         cellularOn, setCellularOn,
         wifiOn, setWifiOn,
         appDimension,
-        locationSaved, setLocationSaved }
+        locationSaved, setLocationSaved,
+        seeAllDevices, setSeeAllDevices,
+        seeDistanceLines, setSeeDistanceLines }
       }>
       {children}
     </AuthContext.Provider>

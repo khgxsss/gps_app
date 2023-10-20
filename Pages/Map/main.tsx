@@ -17,7 +17,7 @@ const MapComponent = () => {
     
     // 현재 표시되어야 하는 deviceid를 저장하는 상태
     const [showDeviceId, setShowDeviceId] = useState<string | null>(null);
-    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, isMapSettingsModalVisible, setMapSettingsModalVisible, tabHistory, setTabHistory, defaultMapZoomLevel, setDefaultMapZoomLevel, cellularOn, setCellularOn, wifiOn, setWifiOn, locationSaved, setLocationSaved, setMapLocationSettingsFirebase } = useAuth();
+    const { fetchedWData, mapType, setMapType, isMapSettingsModalVisible, setMapSettingsModalVisible, cellularOn, wifiOn, locationSaved, setLocationSaved, setMapLocationSettingsFirebase, seeAllDevices, seeDistanceLines } = useAuth();
     const [showUpdateLocationButton, setShowUpdateLocationButton] = useState(false);
 
     useEffect(() => {
@@ -159,7 +159,7 @@ const MapComponent = () => {
                     key={`deviceM_${i}`} 
                     hidden={false}
                     coordinate={deviceCoord}
-                    caption={showDeviceId === device.deviceid? {'text':device.deviceid, 'textSize':12, 'color':'#fffb00', 'haloColor':'#000'} : {}}
+                    caption={!seeAllDevices ? showDeviceId === device.deviceid? {'text':device.deviceid, 'textSize':12, 'color':'#fffb00', 'haloColor':'#000'} : {} : {'text':device.deviceid, 'textSize':12, 'color':'#fffb00', 'haloColor':'#000'}}
                     width={35}
                     height={35}
                     anchor={{ x: 0.5, y: 0.5 }}
@@ -223,18 +223,18 @@ const MapComponent = () => {
                 compass={true}
                 scaleBar={true}
                 nightMode={false}
-                zoomControl={false}
+                zoomControl={true}
                 logoMargin={{left: -50}}
                 mapType={mapType}
                 style={{ height:"100%" }}
-                center={{latitude: locationSaved.latitude, longitude:locationSaved.longitude, zoom: locationSaved.mapZoomLevel}}
+                center={locationSaved ? {latitude: locationSaved.latitude, longitude:locationSaved.longitude, zoom: locationSaved.mapZoomLevel}:{latitude: 37.35882350130591, longitude: 127.10469231924353, zoom: 13}}
                 onCameraChange={handleOnCameraChange}
                 onTouch={()=>(!showUpdateLocationButton)&& setShowUpdateLocationButton(true)}
                 ref={mapView}
             >
                 {userMarker}
                 {deviceMarkers}
-                {distanceLines}
+                {seeDistanceLines && distanceLines}
                 
             </NaverMapView>
             <View style={styles.upperContainer}>

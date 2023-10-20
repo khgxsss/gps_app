@@ -7,7 +7,7 @@ import Theme from '../../Constants/Theme';
 
 const MapSettingsModalComponent: React.FC = () => {
 
-    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isMapSettingsModalVisible, setMapSettingsModalVisible, loading, setLoading, defaultMapZoomLevel, setDefaultMapZoomLevel, locationSaved, setLocationSaved, setMapLocationSettingsFirebase  } = useAuth();
+    const { tabHistory, setTabHistory,  isMapSettingsModalVisible, setMapSettingsModalVisible, locationSaved, setLocationSaved, setMapLocationSettingsFirebase, seeAllDevices, setSeeAllDevices, seeDistanceLines, setSeeDistanceLines  } = useAuth();
 
     return (
         <Modal
@@ -29,8 +29,13 @@ const MapSettingsModalComponent: React.FC = () => {
                                 <SwitchRow 
                                     text='See all device ids' 
                                     iconName='eye'
-                                    _value={true}
-                                    _onValueChange={() => { }} />
+                                    _value={seeAllDevices}
+                                    _onValueChange={() => {setSeeAllDevices(!seeAllDevices)}} />
+                                <SwitchRow 
+                                    text='See distance lines (radius: 3km)' 
+                                    iconName='eye'
+                                    _value={seeDistanceLines}
+                                    _onValueChange={() => {setSeeDistanceLines(!seeDistanceLines)}} />
                                 <SliderRow 
                                     text={`Set Default Map Zoom Level (1~20) : ${locationSaved.mapZoomLevel}`}
                                     iconName='expand'
@@ -40,13 +45,18 @@ const MapSettingsModalComponent: React.FC = () => {
                                     _value={locationSaved.mapZoomLevel}
                                     _onValueChange={()=>{}}
                                     _onSlidingComplete={(e)=>setLocationSaved({...locationSaved,mapZoomLevel:e})} />
+                            </SectionRow>
+                            <SectionRow text='Server Settings'>
+                                <TextInput></TextInput>
+                            </SectionRow>
+                            <SectionRow text='goBack'>
                                 <NavigateRow
                                     text='save & close'
                                     iconName='save'
                                     onPressCallback={async () => {
                                         await setMapLocationSettingsFirebase();
                                         setMapSettingsModalVisible(false);
-                                    }}/>
+                                }}/>
                             </SectionRow>
                         </ReactNativeSettingsPage>
                     </ScrollView>
