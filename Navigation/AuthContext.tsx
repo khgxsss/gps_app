@@ -248,7 +248,19 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
     } catch (err) {
       console.log(err);
     }
-  };  
+  };
+
+  const getUser = async() => {
+    await firestore()
+    .collection('users')
+    .doc(user.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+      }
+    })
+  }
 
   const setMapLocationSettingsFirebase = async () => {
     try {

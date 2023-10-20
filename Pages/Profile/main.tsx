@@ -3,8 +3,7 @@ import { StyleSheet, Dimensions, ScrollView, Image, ImageBackground, Platform, T
 import LinearGradient from 'react-native-linear-gradient';
 import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../Components/IconSets';
 
-import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-import { useAuth } from '../../Navigation/AuthContext';
+import { DeviceDataType, useAuth } from '../../Navigation/AuthContext';
 import ActionButton from 'react-native-action-button-fork1';
 import Theme from '../../Constants/Theme';
 import WifiModalComponent from './wifiModal';
@@ -13,22 +12,28 @@ import Images from '../../Constants/Images';
 const ProfileComponent = () => {
 
   const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isWifiModalVisible, setWifiModalVisible  } = useAuth();
+  const [recentDeviceslength, setRecentDeviceslength] = useState<number>(0)
+  
+  useEffect(() => {
+    const checkRecentDevices = () => {
+        const twoMinutesInMillis = 10000; // 2 minutes in milliseconds
 
-  const getUser = async() => {
-    await firestore()
-    .collection('users')
-    .doc(user.uid)
-    .get()
-    .then((documentSnapshot) => {
-      if( documentSnapshot.exists ) {
-        console.log('User Data', documentSnapshot.data());
-      }
-    })
-  }
+        // Filter the data to only include items where receivedtime is within the last 2 minutes
+        const recentDevices = fetchedWData.filter(device => Date.now() - device.receivedtime < twoMinutesInMillis);
 
-  const handleDeleteDevice = () => {
-    console.log("handle delete device")
-  }
+        // Return the count of such devices
+        setRecentDeviceslength(recentDevices.length);
+    };
+
+    // Initially check the recent devices
+    checkRecentDevices();
+
+    // Set an interval to check the recent devices every 3 seconds
+    const intervalId = setInterval(checkRecentDevices, 3000); // 3 seconds
+
+    // Cleanup the interval when the component is unmounted
+    return () => clearInterval(intervalId);
+  }, [fetchedWData]);
 
   return (
     <View style={styles.profile}>
@@ -55,7 +60,7 @@ const ProfileComponent = () => {
                 <View>
                   <Text style={{color:Theme.COLORS.WHITE, fontSize:16}}>
                     <FontAwesome name="map-marker" color={Theme.COLORS.WHITE} size={16} />
-                    {` `} KR
+                    {` `}
                     </Text>
                 </View>
               </View>
@@ -66,21 +71,21 @@ const ProfileComponent = () => {
       <View style={styles.options}>
         <View style={{ padding: Theme.SIZES.BASE, flexDirection:'row', justifyContent:'space-between' }}>
           <View style={{justifyContent:'center', alignItems:'center'}}>
-            <Text style={{marginBottom: 8, fontWeight:'bold', fontSize:13, color:Theme.COLORS.BLACK}}>36</Text>
+            <Text style={{marginBottom: 8, fontWeight:'bold', fontSize:13, color:Theme.COLORS.BLACK}}>{fetchedWData.length}</Text>
             <Text style={{fontSize:13}}>Total Devices</Text>
           </View>
           <View style={{justifyContent:'center', alignItems:'center'}}>
-            <Text style={{marginBottom: 8, fontWeight:'bold', fontSize:13, color:Theme.COLORS.RED}} >5</Text>
+            <Text style={{marginBottom: 8, fontWeight:'bold', fontSize:13, color:Theme.COLORS.RED}} >{recentDeviceslength}</Text>
             <Text style={{fontSize:13}}>Online Devices</Text>
           </View>
         </View>
         <View style={{ marginTop: 16,paddingVertical: 16, alignItems: 'baseline', flexDirection:'row', justifyContent:'space-between' }}>
-          <Text style={{fontSize:16, color:Theme.COLORS.BLACK}}>Recently updated (24hours)</Text>
-          <Text style={{fontSize:13, color:Theme.COLORS.PRIMARY}} onPress={() => console.log('home')}>View All</Text>
+          <Text style={{fontSize:16, color:Theme.COLORS.BLACK}}>Devices List</Text>
+          <Text style={{fontSize:13, color:Theme.COLORS.PRIMARY}} onPress={() => console.log('ViewAll')}>View All</Text>
         </View>
         <View style={styles.optionLine} />
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={{flexDirection:'row'}} >
+          <View style={{justifyContent:'center', padding:4, width:'100%'}} >
             {fetchedWData.map((device, Index) => (
               <View key={Index} style={styles.textContainer}>
                 <Text style={styles.thumb}>{device.deviceid}</Text>
@@ -172,19 +177,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 4,
-    marginVertical: 4,
-    padding: 20,
-    marginTop: 10,
-    margin: 10,
-    marginBottom: 10,
-    backgroundColor:Theme.COLORS.SWITCH_ON,
+    padding: 4,
+    margin: 4,
+    backgroundColor:Theme.COLORS.ICON,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 0 },
     shadowRadius: 8,
     shadowOpacity: 0.2,
-    opacity: 0.9,
-    borderBlockColor: 'black',
-    borderColor: 'black',
+    borderColor: Theme.COLORS.WHITE,
     borderWidth: 2
   },
   thumb: {
