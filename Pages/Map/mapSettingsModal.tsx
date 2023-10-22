@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Dimensions, ScrollView, Image, ImageBackground, Platform, View, Modal, TouchableOpacity, TextInput, Text, Button} from 'react-native';
 import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../Components/IconSets';
-import ReactNativeSettingsPage, { CheckRow, NavigateRow, SectionRow, SliderRow, SwitchRow } from 'react-native-settings-page-fork1'
+import ReactNativeSettingsPage, { CheckRow, NavigateRow, SectionRow, SliderRow, SwitchRow, TextRow } from 'react-native-settings-page-fork1'
 import { useAuth } from '../../Navigation/AuthContext';
 import Theme from '../../Constants/Theme';
 
 const MapSettingsModalComponent: React.FC = () => {
 
     const { tabHistory, setTabHistory,  isMapSettingsModalVisible, setMapSettingsModalVisible, locationSaved, setLocationSaved, setMapLocationSettingsFirebase, seeAllDevices, setSeeAllDevices, seeDistanceLines, setSeeDistanceLines  } = useAuth();
-
+    const [as, setas]  = useState('a')
     return (
         <Modal
             transparent={true}
@@ -47,7 +47,13 @@ const MapSettingsModalComponent: React.FC = () => {
                                     _onSlidingComplete={(e)=>setLocationSaved({...locationSaved,mapZoomLevel:e})} />
                             </SectionRow>
                             <SectionRow text='Server Settings'>
-                                <TextInput></TextInput>
+                                <TextRow
+                                    text='RCN server settings'
+                                    iconName='eye'
+                                    _color='#000'
+                                    _value={as}
+                                    _placeholder='placeholder'
+                                    _onValueChange={(text: string) =>{setas(text)}} />
                             </SectionRow>
                             <SectionRow text='goBack'>
                                 <NavigateRow
