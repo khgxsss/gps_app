@@ -16,10 +16,10 @@ const ProfileComponent = () => {
   
   useEffect(() => {
     const checkRecentDevices = () => {
-        const twoMinutesInMillis = 10000; // 2 minutes in milliseconds
+        const twoMinutesInMillis = 120000; // 2 minutes in milliseconds
 
-        // Filter the data to only include items where receivedtime is within the last 2 minutes
-        const recentDevices = fetchedWData.filter(device => Date.now() - device.receivedtime < twoMinutesInMillis);
+        // Filter the data to only include items where time_generation is within the last 2 minutes
+        const recentDevices = fetchedWData.filter(device => Date.now() - device.time_generation.time < twoMinutesInMillis);
 
         // Return the count of such devices
         setRecentDeviceslength(recentDevices.length);
@@ -88,7 +88,7 @@ const ProfileComponent = () => {
           <View style={{justifyContent:'center', padding:4, width:'100%'}} >
             {fetchedWData.map((device, Index) => (
               <View key={Index} style={styles.textContainer}>
-                <Text style={styles.thumb}>{device.deviceid}</Text>
+                <Text style={styles.thumb}>{device.buoy_id}</Text>
               </View>
             ))}
           </View>

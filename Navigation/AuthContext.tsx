@@ -39,6 +39,14 @@ interface AuthContextType {
     setSeeAllDevices: (value: boolean) => void;
     seeDistanceLines: boolean,
     setSeeDistanceLines: (value: boolean) => void;
+    serverLoginInput: serverLoginInputType
+    setServerLoginInput: (value: serverLoginInputType) => void;
+}
+
+interface serverLoginInputType {
+  ip:string;
+  port:number,
+  password:string;
 }
 
 interface AuthProviderProps {
@@ -68,9 +76,18 @@ interface deviceType {
 }
 
 export interface DeviceDataType {
-  deviceid: string;
+  buoy_id: string;
   location: Coord;
-  receivedtime: number;
+  time_generation: {
+    year: number,
+    month: number,
+    day: number,
+    hours: number,
+    minutes: number,
+    seconds: number,
+    time?: number,
+  };
+  status?: string;
 };
 
 export interface FetchedDataType {
@@ -96,6 +113,12 @@ const MAP_TYPE = {
     NAVI: 1
 };
 
+const initialServerLoginInput: serverLoginInputType = {
+  ip:'192.168.0.1',
+  port:12345,
+  password:'123'
+}
+
 const initialAppDimension: appDimensionType = {
   appWidth: 0,
   appHeight: 0,
@@ -108,10 +131,14 @@ const initialAppDimension: appDimensionType = {
 const initialSavedLocation: locationSavedType = {latitude: 37.35882350130591, longitude: 127.10469231924353, mapZoomLevel: 13}
 
 // only for dev
+const now = new Date();
+const secondsSinceMidnight = ((now.getHours() * 60 + now.getMinutes()) * 60 + now.getSeconds());
+console.log('test_data',secondsSinceMidnight)
+console.log
 const test_data:DeviceDataType[] = [
-  { deviceid: "40ca63fffe1deca5", location: { latitude: 36.4383755, longitude: 127.4248978 }, receivedtime: Date.now()+10000},
-  { deviceid: "40ca63fffe1deca6", location: { latitude: 36.4335753, longitude: 127.4028976 }, receivedtime:Date.now() },
-  { deviceid: "40ca63fffe1deca7", location: { latitude: 36.4235753, longitude: 127.4428976 }, receivedtime:Date.now() }
+  { buoy_id: "40ca63fffe1deca5", location: { latitude: 36.4383755, longitude: 127.4248978 }, time_generation:{year:now.getFullYear(),month:now.getMonth()+1,day:now.getDate(),seconds:secondsSinceMidnight+10, time:Date.now()}},
+  { buoy_id: "40ca63fffe1deca6", location: { latitude: 36.4335753, longitude: 127.4028976 }, time_generation:{year:now.getFullYear(),month:now.getMonth()+1,day:now.getDate(),seconds:secondsSinceMidnight+5, time:Date.now()} },
+  { buoy_id: "40ca63fffe1deca7", location: { latitude: 36.4235753, longitude: 127.4428976 }, time_generation:{year:now.getFullYear(),month:now.getMonth()+1,day:now.getDate(),seconds:secondsSinceMidnight, time:Date.now()} }
 ]
 
 const default_user = {displayName:'',email:'',isNewUser:false,phoneNumber:'',photoURL:'',uid:'',providerId:'',creationTimestamp:0,lastSignInTimestamp:0}
@@ -122,7 +149,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   const [user, setUser] = useState<User>(default_user);
   const [activeTab, setActiveTab] = React.useState('Map');
   const [mapType, setMapType] = useState(MAP_TYPE.BASIC); // used in MapComponent
-  const [fetchedWData, setFetchedWData] = React.useState<DeviceDataType[]>(test_data);
+  const [fetchedWData, setFetchedWData] = React.useState<DeviceDataType[]>();
   const [tabHistory, setTabHistory] = useState<number[]>([1])
   const [isWifiModalVisible, setWifiModalVisible] = useState(false);
   const [isMapSettingsModalVisible, setMapSettingsModalVisible] = useState(false);
@@ -134,6 +161,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   const [locationSaved, setLocationSaved] = useState<locationSavedType>(initialSavedLocation); // firebase ÀÌ¿כ
   const [seeAllDevices, setSeeAllDevices] = useState<boolean>(false);
   const [seeDistanceLines, setSeeDistanceLines] = useState<boolean>(false);
+  const [serverLoginInput, setServerLoginInput] = useState<serverLoginInputType>(initialServerLoginInput)
 
   const safeareadimension = useSafeAreaFrame();
   
@@ -343,7 +371,8 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
         appDimension,
         locationSaved, setLocationSaved,
         seeAllDevices, setSeeAllDevices,
-        seeDistanceLines, setSeeDistanceLines }
+        seeDistanceLines, setSeeDistanceLines,
+        serverLoginInput, setServerLoginInput }
       }>
       {children}
     </AuthContext.Provider>

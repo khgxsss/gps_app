@@ -7,8 +7,8 @@ import Theme from '../../Constants/Theme';
 
 const MapSettingsModalComponent: React.FC = () => {
 
-    const { tabHistory, setTabHistory,  isMapSettingsModalVisible, setMapSettingsModalVisible, locationSaved, setLocationSaved, setMapLocationSettingsFirebase, seeAllDevices, setSeeAllDevices, seeDistanceLines, setSeeDistanceLines  } = useAuth();
-    const [as, setas]  = useState('a')
+    const { tabHistory, setTabHistory,  isMapSettingsModalVisible, setMapSettingsModalVisible, locationSaved, setLocationSaved, setMapLocationSettingsFirebase, seeAllDevices, setSeeAllDevices, seeDistanceLines, setSeeDistanceLines, serverLoginInput, setServerLoginInput  } = useAuth();
+    // const [as, setas]  = useState('a')
     return (
         <Modal
             transparent={true}
@@ -48,12 +48,26 @@ const MapSettingsModalComponent: React.FC = () => {
                             </SectionRow>
                             <SectionRow text='Server Settings'>
                                 <TextRow
-                                    text='RCN server settings'
-                                    iconName='eye'
+                                    text='Set IP Address'
+                                    iconName='edit'
                                     _color='#000'
-                                    _value={as}
-                                    _placeholder='placeholder'
-                                    _onValueChange={(text: string) =>{setas(text)}} />
+                                    _value={serverLoginInput.ip}
+                                    _placeholder='put ip address here'
+                                    _onValueChange={(text: string) =>{setServerLoginInput({...serverLoginInput,ip:text})}} />
+                                <TextRow
+                                    text='Set Port'
+                                    iconName='edit'
+                                    _color='#000'
+                                    _value={`${serverLoginInput.port}`}
+                                    _placeholder='put ip address here'
+                                    _onValueChange={(text: string) =>{setServerLoginInput({...serverLoginInput,port:+text})}} />
+                                <TextRow
+                                    text='Set Password'
+                                    iconName='edit'
+                                    _color='#000'
+                                    _value={serverLoginInput.password}
+                                    _placeholder='put password here'
+                                    _onValueChange={(text: string) =>{setServerLoginInput({...serverLoginInput,password:text})}} />
                             </SectionRow>
                             <SectionRow text='goBack'>
                                 <NavigateRow
@@ -82,7 +96,7 @@ const styles = StyleSheet.create({
     modalView: {
         position:'absolute',
         width: "90%",
-        height: "40%",
+        height: "60%",
         padding: 20,
         backgroundColor:Theme.COLORS.WHITE,
         borderRadius: 10,

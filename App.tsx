@@ -81,7 +81,7 @@ function App(): JSX.Element {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Analytics':
-        return <Todos user={user.displayName} activeTab={activeTab} setActiveTab={setActiveTab}/>;
+        return <WebSocketComponent/>;
       case 'Map':
         return <MapComponent/>;
       case 'Profile':
@@ -96,7 +96,6 @@ function App(): JSX.Element {
   return (
     <View style={{...styles.safeAreaView, height: appDimension.appHeight}}>
       <LoginComponent/>
-      {/* <WebSocketComponent/> */}
       {loading ? <LoaderComponent/>:<></> }
       {
         user.uid ? (

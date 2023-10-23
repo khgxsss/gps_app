@@ -32,6 +32,6 @@ export const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2
 };
 
 export const fetch = () => {
-    // 데이터를 받아서 DeviceType의 receivedtime 에 Date.now() 넣어주면 됨
+    // 데이터를 받아서 DeviceType의 time_generation 에 Date.now() 넣어주면 됨
     return
 }

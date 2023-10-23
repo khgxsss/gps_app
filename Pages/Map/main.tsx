@@ -15,7 +15,7 @@ const MapComponent = () => {
     const [region, setRegion] = useState<Region>({"contentRegion": [{"latitude": 36.43313265533338, "longitude": 127.40861266544789}, {"latitude": 36.44320541782096, "longitude": 127.40861266544789}, {"latitude": 36.44320541782096, "longitude": 127.41719573454998}, {"latitude": 36.43313265533338, "longitude": 127.41719573454998}, {"latitude": 36.43313265533338, "longitude": 127.40861266544789}], "coveringRegion": [{"latitude": 36.43313265533338, "longitude": 127.40861266544789}, {"latitude": 36.44320541782096, "longitude": 127.40861266544789}, {"latitude": 36.44320541782096, "longitude": 127.41719573454998}, {"latitude": 36.43313265533338, "longitude": 127.41719573454998}, {"latitude": 36.43313265533338, "longitude": 127.40861266544789}], "latitude": 36.43816920000003, "longitude": 127.41290420000009, "zoom": 16});
     const mapView = useRef<NaverMapViewInstance>(null);
     
-    // 현재 표시되어야 하는 deviceid를 저장하는 상태
+    // 현재 표시되어야 하는 buoy_id를 저장하는 상태
     const [showDeviceId, setShowDeviceId] = useState<string | null>(null);
     const { fetchedWData, mapType, setMapType, isMapSettingsModalVisible, setMapSettingsModalVisible, cellularOn, wifiOn, locationSaved, setLocationSaved, setMapLocationSettingsFirebase, seeAllDevices, seeDistanceLines } = useAuth();
     const [showUpdateLocationButton, setShowUpdateLocationButton] = useState(false);
@@ -33,28 +33,32 @@ const MapComponent = () => {
                 setShowUpdateLocationButton(false)
             },
             (error) => {
-                if (error.code === 2) { // 위치 서비스가 사용 불가능한 경우
-                    // 위치 서비스 활성화 요청
-                    setShowUpdateLocationButton(false)
-                    Alert.alert(
-                        'GPS Required',
-                        'Please turn on GPS for better experience',
-                    [
-                        {
-                        text: 'Go to GPS Settings',
-                        onPress: () => {
-                            IntentLauncher.startActivity({
-                                action: 'android.settings.LOCATION_SOURCE_SETTINGS'
-                            });
-                        }
-                        },
-                        {
-                        text: 'Cancel',
-                        onPress: () => {},
-                        style: 'cancel',
-                        },
-                    ]
-                    );
+                switch (error.code) {
+                    case 1: 
+                        requestLocationPermission();
+                        break;
+                    case 2: 
+                        setShowUpdateLocationButton(false)
+                        Alert.alert(
+                            'GPS Required',
+                            'Please turn on GPS for better experience',
+                            [
+                                {
+                                text: 'Go to GPS Settings',
+                                onPress: () => {
+                                    IntentLauncher.startActivity({
+                                        action: 'android.settings.LOCATION_SOURCE_SETTINGS'
+                                    });
+                                }
+                                },
+                                {
+                                text: 'Cancel',
+                                onPress: () => {},
+                                style: 'cancel',
+                                },
+                            ]
+                        );
+                        break;
                 }
               },
             {
@@ -71,6 +75,30 @@ const MapComponent = () => {
             setMapLocationSettingsFirebase()
         };
     }, [lastTouchTime]);
+
+    const requestLocationPermission = async () => {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    title: "Location Permission",
+                    message: "This app requires access to your location.",
+                    buttonNeutral: "Ask Me Later",
+                    buttonNegative: "Cancel",
+                    buttonPositive: "OK"
+                }
+            );
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log("Location permission granted");
+                // 권한이 허용된 경우의 로직을 추가합니다.
+            } else {
+                console.log("Location permission denied");
+                // 권한이 거부된 경우의 로직을 추가합니다.
+            }
+        } catch (err) {
+            console.warn(err);
+        }
+    };
 
     const handleOnCameraChange = (cameraChangeEvent: Region) => {
         // 사용자가 지도를 터치할 때마다 현재 시간을 저장한다.
@@ -159,20 +187,20 @@ const MapComponent = () => {
                     key={`deviceM_${i}`} 
                     hidden={false}
                     coordinate={deviceCoord}
-                    caption={!seeAllDevices ? showDeviceId === device.deviceid? {'text':device.deviceid, 'textSize':12, 'color':'#fffb00', 'haloColor':'#000'} : {} : {'text':device.deviceid, 'textSize':12, 'color':'#fffb00', 'haloColor':'#000'}}
+                    caption={!seeAllDevices ? showDeviceId === device.buoy_id? {'text':device.buoy_id, 'textSize':12, 'color':'#fffb00', 'haloColor':'#000'} : {} : {'text':device.buoy_id, 'textSize':12, 'color':'#fffb00', 'haloColor':'#000'}}
                     width={35}
                     height={35}
                     anchor={{ x: 0.5, y: 0.5 }}
-                    onClick={() => handleDeviceClick(device.deviceid)} // 마커 클릭 핸들러 추가
+                    onClick={() => handleDeviceClick(device.buoy_id)} // 마커 클릭 핸들러 추가
                 >
-                    <MaterialCommunityIcons key={`deviceI_${i}`} name="panorama-sphere" size={35} color={(Date.now() - device.receivedtime < 120000) ? Theme.COLORS.DEVICE_ON : Theme.COLORS.DEVICE_OFF} />
+                    <MaterialCommunityIcons key={`deviceI_${i}`} name="panorama-sphere" size={35} color={(Date.now() - device.time_generation.time < 120000) ? Theme.COLORS.DEVICE_ON : Theme.COLORS.DEVICE_OFF} />
                 </Marker>
             )
         });
     }, [fetchedWData, region, showDeviceId]);
 
     const handleDeviceClick = (deviceId: string) => {
-        // 이미 표시된 deviceid를 클릭하면 숨기고, 그렇지 않으면 표시합니다.
+        // 이미 표시된 buoy_id를 클릭하면 숨기고, 그렇지 않으면 표시합니다.
         if (showDeviceId === deviceId) {
             setShowDeviceId(null);
         } else {
