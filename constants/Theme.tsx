@@ -3,6 +3,7 @@ export default {
     DEFAULT: '#DCDCDC',
     PRIMARY: '#9C26B0',
     LABEL: '#FE2472',
+    SETINGS_BTN: 'rgba(114,36,254,0.5)',
     INFO: '#00BCD4',
     ERROR: '#F44336',
     SUCCESS: '#4CAF50',
