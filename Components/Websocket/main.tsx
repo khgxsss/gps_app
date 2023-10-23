@@ -23,6 +23,13 @@ const WebSocketComponent = () => {
       
           for (let i = 0; i < buoyCount; i++) {
               const offset = 2 + i * 20;
+      
+              // ID
+              const buoy_id = msg.slice(offset, offset + 4).toString('hex').toUpperCase();
+      
+              // Location
+              const latitude = +((msg.readInt32BE(offset + 4) / 10000000) * (msg[offset + 4] & 0x80 ? -1 : 1)).toFixed(7);
+              const longitude = +((msg.readInt32BE(offset + 8) / 10000000) * (msg[offset + 8] & 0x80 ? -1 : 1)).toFixed(7);
 
               // Year
               const year = (msg[offset + 12] & 0b11111100) >> 2;
@@ -40,15 +47,10 @@ const WebSocketComponent = () => {
               const minutes = Math.floor((secondsFromUDP % 3600) / 60);
               const seconds = secondsFromUDP % 60;
 
-              console.log(`Time Generation: ${fullYear}-${month}-${day} ${hours}:${minutes}:${seconds}`);
-      
-              // ID
-              const buoy_id = msg.slice(offset, offset + 4).toString('hex').toUpperCase();
-      
-              // Location
-              const latitude = +((msg.readInt32BE(offset + 4) / 10000000) * (msg[offset + 4] & 0x80 ? -1 : 1)).toFixed(7);
-              const longitude = +((msg.readInt32BE(offset + 8) / 10000000) * (msg[offset + 8] & 0x80 ? -1 : 1)).toFixed(7);
-      
+              // Create Date object and convert it to milliseconds
+              const dateObj = new Date(fullYear, month - 1, day, hours, minutes, seconds);
+              const timeInMilliseconds = dateObj.getTime();
+
               // Status
               const status = msg.slice(offset + 16, offset + 20).toString('hex').toUpperCase();
       
@@ -61,7 +63,8 @@ const WebSocketComponent = () => {
                       day:day,
                       hours:hours,
                       minutes:minutes,
-                      seconds:seconds
+                      seconds:seconds,
+                      time: timeInMilliseconds
                   },
                   status
               };

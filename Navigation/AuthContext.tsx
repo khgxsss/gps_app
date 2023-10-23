@@ -85,7 +85,7 @@ export interface DeviceDataType {
     hours: number,
     minutes: number,
     seconds: number,
-    time?: number,
+    time: number,
   };
   status?: string;
 };

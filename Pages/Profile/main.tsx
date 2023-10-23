@@ -26,7 +26,7 @@ const ProfileComponent = () => {
     };
 
     // Initially check the recent devices
-    checkRecentDevices();
+    if (fetchedWData) checkRecentDevices();
 
     // Set an interval to check the recent devices every 3 seconds
     const intervalId = setInterval(checkRecentDevices, 3000); // 3 seconds
@@ -71,7 +71,7 @@ const ProfileComponent = () => {
       <View style={styles.options}>
         <View style={{ padding: Theme.SIZES.BASE, flexDirection:'row', justifyContent:'space-between' }}>
           <View style={{justifyContent:'center', alignItems:'center'}}>
-            <Text style={{marginBottom: 8, fontWeight:'bold', fontSize:13, color:Theme.COLORS.BLACK}}>{fetchedWData.length}</Text>
+            <Text style={{marginBottom: 8, fontWeight:'bold', fontSize:13, color:Theme.COLORS.BLACK}}>{fetchedWData? fetchedWData.length:0}</Text>
             <Text style={{fontSize:13}}>Total Devices</Text>
           </View>
           <View style={{justifyContent:'center', alignItems:'center'}}>
@@ -86,7 +86,7 @@ const ProfileComponent = () => {
         <View style={styles.optionLine} />
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{justifyContent:'center', padding:4, width:'100%'}} >
-            {fetchedWData.map((device, Index) => (
+            {fetchedWData&& fetchedWData.map((device, Index) => (
               <View key={Index} style={styles.textContainer}>
                 <Text style={styles.thumb}>{device.buoy_id}</Text>
               </View>

@@ -106,6 +106,11 @@ const MapComponent = () => {
         setRegion(cameraChangeEvent);
     }
 
+    const handleOnTouch = () => {
+        if (!showUpdateLocationButton) setShowUpdateLocationButton(true); 
+        setLastTouchTime(Date.now());
+    }
+
     const isInsideMap = (deviceCoord: Coord, mapBounds: Coord[]) => {
         return deviceCoord.latitude >= mapBounds[0].latitude && 
                deviceCoord.latitude <= mapBounds[2].latitude && 
@@ -257,7 +262,7 @@ const MapComponent = () => {
                 style={{ height:"100%" }}
                 center={locationSaved ? {latitude: locationSaved.latitude, longitude:locationSaved.longitude, zoom: locationSaved.mapZoomLevel}:{latitude: 37.35882350130591, longitude: 127.10469231924353, zoom: 13}}
                 onCameraChange={handleOnCameraChange}
-                onTouch={()=>(!showUpdateLocationButton)&& setShowUpdateLocationButton(true)}
+                onTouch={handleOnTouch}
                 ref={mapView}
             >
                 {userMarker}
