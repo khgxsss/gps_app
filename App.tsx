@@ -81,7 +81,7 @@ function App(): JSX.Element {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Analytics':
-        return <WebSocketComponent/>;
+        return <></>;
       case 'Map':
         return <MapComponent/>;
       case 'Profile':
@@ -95,6 +95,7 @@ function App(): JSX.Element {
 // Login dev용으로 전환
   return (
     <View style={{...styles.safeAreaView, height: appDimension.appHeight}}>
+      <WebSocketComponent/>
       <LoginComponent/>
       {loading ? <LoaderComponent/>:<></> }
       {

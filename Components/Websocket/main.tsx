@@ -1,4 +1,3 @@
-// websocket을 함수로 ? 생각해보기
 import React, { useState, useEffect } from 'react';
 import { Text, View } from 'react-native';
 import dgram from 'react-native-udp';
@@ -76,17 +75,18 @@ const WebSocketComponent = () => {
     }, []);
     
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          {fetchedWData && fetchedWData.map((buoy, idx) => (
-            <View key={idx} style={{ marginBottom: 10 }}>
-              <Text>ID: {buoy.buoy_id}</Text>
-              <Text>Location: {buoy.location.latitude}N, {buoy.location.longitude}E</Text>
-              <Text>Date: {buoy.time_generation.year}-{buoy.time_generation.month}-{buoy.time_generation.day}-{buoy.time_generation.hours}:{buoy.time_generation.minutes}:{buoy.time_generation.seconds}</Text>
-              <Text>DateTime: {buoy.time_generation.time}</Text>
-              <Text>Status: {buoy.status}</Text>
-            </View>
-          ))}
-        </View>
+        // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        //   {fetchedWData && fetchedWData.map((buoy, idx) => (
+        //     <View key={idx} style={{ marginBottom: 10 }}>
+        //       <Text>ID: {buoy.buoy_id}</Text>
+        //       <Text>Location: {buoy.location.latitude}N, {buoy.location.longitude}E</Text>
+        //       <Text>Date: {buoy.time_generation.year}-{buoy.time_generation.month}-{buoy.time_generation.day}-{buoy.time_generation.hours}:{buoy.time_generation.minutes}:{buoy.time_generation.seconds}</Text>
+        //       <Text>DateTime: {buoy.time_generation.time}</Text>
+        //       <Text>Status: {buoy.status}</Text>
+        //     </View>
+        //   ))}
+        // </View>
+        <></>
     );
 };
 
