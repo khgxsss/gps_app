@@ -8,6 +8,7 @@ import ActionButton from 'react-native-action-button-fork1';
 import Theme from '../../Constants/Theme';
 import WifiModalComponent from './wifiModal';
 import Images from '../../Constants/Images';
+import showExitAlert from '../../Components/ExitApp';
 
 const ProfileComponent = () => {
 
@@ -19,14 +20,13 @@ const ProfileComponent = () => {
         const twoMinutesInMillis = 120000; // 2 minutes in milliseconds
 
         // Filter the data to only include items where time_generation is within the last 2 minutes
-        const recentDevices = fetchedWData.filter(device => Date.now() - device.time_generation.time < twoMinutesInMillis);
+        const recentDevices = fetchedWData && fetchedWData.filter(device => Date.now() - device.time_generation.time < twoMinutesInMillis);
 
         // Return the count of such devices
-        setRecentDeviceslength(recentDevices.length);
+        if (recentDevices) setRecentDeviceslength(recentDevices.length);
     };
-
     // Initially check the recent devices
-    if (fetchedWData) checkRecentDevices();
+    checkRecentDevices();
 
     // Set an interval to check the recent devices every 3 seconds
     const intervalId = setInterval(checkRecentDevices, 3000); // 3 seconds
@@ -81,7 +81,7 @@ const ProfileComponent = () => {
         </View>
         <View style={{ marginTop: 16,paddingVertical: 16, alignItems: 'baseline', flexDirection:'row', justifyContent:'space-between' }}>
           <Text style={{fontSize:16, color:Theme.COLORS.BLACK}}>Devices List</Text>
-          <Text style={{fontSize:13, color:Theme.COLORS.PRIMARY}} onPress={() => console.log('ViewAll')}>View All</Text>
+          {/* <Text style={{fontSize:13, color:Theme.COLORS.PRIMARY}} onPress={() => console.log('ViewAll')}>View All</Text> */}
         </View>
         <View style={styles.optionLine} />
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -100,6 +100,9 @@ const ProfileComponent = () => {
         </ActionButton.Item>
         <ActionButton.Item buttonColor='#9b59b6' title='Logout' onPress={()=>{handleSignOut()}}>
             <MaterialCommunityIcons name="logout" color={'#fff'} size={25}/>
+        </ActionButton.Item>
+        <ActionButton.Item buttonColor='#9b59b6' title='Exit' onPress={showExitAlert}>
+            <MaterialCommunityIcons name="close-box-multiple-outline" color={'#fff'} size={25}/>
         </ActionButton.Item>
       </ActionButton>
       {

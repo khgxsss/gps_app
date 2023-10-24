@@ -23,63 +23,59 @@ const MapSettingsModalComponent: React.FC = () => {
                 activeOpacity={1}
             >
                 <View style={styles.modalView}>
-                    <ScrollView persistentScrollbar={false} >
-                        <ReactNativeSettingsPage>
-                            <SectionRow text='Map Settings'>
-                                <SwitchRow 
-                                    text='See all device ids' 
-                                    iconName='eye'
-                                    _value={seeAllDevices}
-                                    _onValueChange={() => {setSeeAllDevices(!seeAllDevices)}} />
-                                <SwitchRow 
-                                    text='See distance lines (radius: 3km)' 
-                                    iconName='eye'
-                                    _value={seeDistanceLines}
-                                    _onValueChange={() => {setSeeDistanceLines(!seeDistanceLines)}} />
-                                <SliderRow 
-                                    text={`Set Default Map Zoom Level (1~20) : ${locationSaved.mapZoomLevel}`}
-                                    iconName='expand'
-                                    _color='#000'
-                                    _min={1}
-                                    _max={20}
-                                    _value={locationSaved.mapZoomLevel}
-                                    _onValueChange={()=>{}}
-                                    _onSlidingComplete={(e)=>setLocationSaved({...locationSaved,mapZoomLevel:e})} />
-                            </SectionRow>
-                            <SectionRow text='Server Settings'>
-                                <TextRow
-                                    text='Set IP Address'
-                                    iconName='edit'
-                                    _color='#000'
-                                    _value={serverLoginInput.ip}
-                                    _placeholder='put ip address here'
-                                    _onValueChange={(text: string) =>{setServerLoginInput({...serverLoginInput,ip:text})}} />
-                                <TextRow
-                                    text='Set Port'
-                                    iconName='edit'
-                                    _color='#000'
-                                    _value={`${serverLoginInput.port}`}
-                                    _placeholder='put ip address here'
-                                    _onValueChange={(text: string) =>{setServerLoginInput({...serverLoginInput,port:+text})}} />
-                                <TextRow
-                                    text='Set Password'
-                                    iconName='edit'
-                                    _color='#000'
-                                    _value={serverLoginInput.password}
-                                    _placeholder='put password here'
-                                    _onValueChange={(text: string) =>{setServerLoginInput({...serverLoginInput,password:text})}} />
-                            </SectionRow>
-                            <SectionRow text='goBack'>
-                                <NavigateRow
-                                    text='save & close'
-                                    iconName='save'
-                                    onPressCallback={async () => {
-                                        await setMapLocationSettingsFirebase();
-                                        setMapSettingsModalVisible(false);
-                                }}/>
-                            </SectionRow>
-                        </ReactNativeSettingsPage>
-                    </ScrollView>
+                    <ReactNativeSettingsPage>
+                        <SectionRow text='Map Settings'>
+                            <SwitchRow 
+                                text='See all device ids' 
+                                iconName='eye'
+                                _value={seeAllDevices}
+                                _onValueChange={() => {setSeeAllDevices(!seeAllDevices)}} />
+                            <SwitchRow 
+                                text='See distance lines (radius: 3km)' 
+                                iconName='eye'
+                                _value={seeDistanceLines}
+                                _onValueChange={() => {setSeeDistanceLines(!seeDistanceLines)}} />
+                            <SliderRow 
+                                text={`Set Default Map Zoom Level (1~20) : ${locationSaved.mapZoomLevel}`}
+                                iconName='expand'
+                                _color='#000'
+                                _min={1}
+                                _max={20}
+                                _value={locationSaved.mapZoomLevel}
+                                _onValueChange={()=>{}}
+                                _onSlidingComplete={(e)=>setLocationSaved({...locationSaved,mapZoomLevel:e})} />
+                            <NavigateRow
+                                text='save & close'
+                                iconName='save'
+                                onPressCallback={async () => {
+                                    await setMapLocationSettingsFirebase();
+                                    setMapSettingsModalVisible(false);
+                            }}/>
+                        </SectionRow>
+                        <SectionRow text='Server Settings'>
+                            <TextRow
+                                text='Set IP Address'
+                                iconName='edit'
+                                _color='#000'
+                                _value={serverLoginInput.ip}
+                                _placeholder='put ip address here'
+                                _onValueChange={(text: string) =>{setServerLoginInput({...serverLoginInput,ip:text})}} />
+                            <TextRow
+                                text='Set Port'
+                                iconName='edit'
+                                _color='#000'
+                                _value={`${serverLoginInput.port}`}
+                                _placeholder='put ip address here'
+                                _onValueChange={(text: string) =>{setServerLoginInput({...serverLoginInput,port:+text})}} />
+                            <TextRow
+                                text='Set Password'
+                                iconName='edit'
+                                _color='#000'
+                                _value={serverLoginInput.password}
+                                _placeholder='put password here'
+                                _onValueChange={(text: string) =>{setServerLoginInput({...serverLoginInput,password:text})}} />
+                        </SectionRow>
+                    </ReactNativeSettingsPage>
                 </View>
             </TouchableOpacity>
         </Modal>

@@ -1,7 +1,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import Auth, { AuthEventEmitter, AuthEvents, User } from 'react-native-firebaseui-auth';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-import { Dimensions } from 'react-native';
 import { Coord } from 'react-native-nmap-fork1';
 import { useSafeAreaFrame } from 'react-native-safe-area-context';
 
@@ -12,7 +11,7 @@ interface AuthContextType {
     setMapType: (value: number) => void;
     user: User;
     setUser: (value: User) => void;
-    fetchedWData: DeviceDataType[];
+    fetchedWData: DeviceDataType[]|undefined;
     setFetchedWData: (value: DeviceDataType[]) => void;
     handleSignIn: () => void;
     handleSignOut: () => void;
@@ -129,17 +128,6 @@ const initialAppDimension: appDimensionType = {
 };
 
 const initialSavedLocation: locationSavedType = {latitude: 37.35882350130591, longitude: 127.10469231924353, mapZoomLevel: 13}
-
-// only for dev
-const now = new Date();
-const secondsSinceMidnight = ((now.getHours() * 60 + now.getMinutes()) * 60 + now.getSeconds());
-console.log('test_data',secondsSinceMidnight)
-console.log
-const test_data:DeviceDataType[] = [
-  { buoy_id: "40ca63fffe1deca5", location: { latitude: 36.4383755, longitude: 127.4248978 }, time_generation:{year:now.getFullYear(),month:now.getMonth()+1,day:now.getDate(),seconds:secondsSinceMidnight+10, time:Date.now()}},
-  { buoy_id: "40ca63fffe1deca6", location: { latitude: 36.4335753, longitude: 127.4028976 }, time_generation:{year:now.getFullYear(),month:now.getMonth()+1,day:now.getDate(),seconds:secondsSinceMidnight+5, time:Date.now()} },
-  { buoy_id: "40ca63fffe1deca7", location: { latitude: 36.4235753, longitude: 127.4428976 }, time_generation:{year:now.getFullYear(),month:now.getMonth()+1,day:now.getDate(),seconds:secondsSinceMidnight, time:Date.now()} }
-]
 
 const default_user = {displayName:'',email:'',isNewUser:false,phoneNumber:'',photoURL:'',uid:'',providerId:'',creationTimestamp:0,lastSignInTimestamp:0}
 

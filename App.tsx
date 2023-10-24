@@ -97,7 +97,7 @@ function App(): JSX.Element {
     <View style={{...styles.safeAreaView, height: appDimension.appHeight}}>
       <WebSocketComponent/>
       <LoginComponent/>
-      {loading ? <LoaderComponent/>:<></> }
+      {/* {loading ? <LoaderComponent/>:<></> } */}
       {
         user.uid ? (
           <>

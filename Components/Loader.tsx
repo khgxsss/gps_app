@@ -19,11 +19,12 @@ const LoaderComponent: React.FC = () => {
 
 const styles = StyleSheet.create({
     bgContainer: {
-        flex: 1,
+        width:'100%',
+        height:'100%',
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "rgba(0,0,0,0.5)", // 반투명한 회색 배경
-        zIndex: 100
+        zIndex: 10
     }
 })
 export default LoaderComponent;

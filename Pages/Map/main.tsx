@@ -7,7 +7,7 @@ import ActionButton from 'react-native-action-button-fork1';
 import IntentLauncher from 'react-native-intent-launcher-fork1';
 import { DeviceDataType, Region, useAuth } from '../../Navigation/AuthContext';
 import Theme from '../../Constants/Theme';
-import { calculateDistance, hexToRgb } from '../../Utils/utils';
+import { calculateDistance, hexToRgb } from '../../Utils/utilfuncs';
 import MapSettingsModalComponent from './mapSettingsModal';
 
 const MapComponent = () => {

@@ -6,6 +6,7 @@ import { FontAwesome,Ionicons,MaterialCommunityIcons } from '../../Components/Ic
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import { useAuth } from '../../Navigation/AuthContext';
 import Theme from '../../Constants/Theme';
+import ProgressCircle from 'react-native-progress/Circle';
 
 import WifiManager, { WifiEntry, WiFiObject } from 'react-native-wifi-reborn';
 
@@ -99,6 +100,17 @@ const WifiModalComponent: React.FC = () => {
                 setWifiModalVisible(!isWifiModalVisible);
             }}
             >
+            {
+                loading && (
+                    <TouchableOpacity
+                        style={styles.loadingContainer}
+                        activeOpacity={1}
+                    >
+                    <ProgressCircle color={'green'} showsText={true}/>
+                        <Text>Loading...</Text>
+                    </TouchableOpacity>
+                )
+            }
             <TouchableOpacity
                 style={styles.modalContainer}
                 activeOpacity={1}
@@ -239,6 +251,15 @@ const styles = StyleSheet.create({
         backgroundColor:Theme.COLORS.SECONDARY,
         padding: 10,
         borderRadius: 10
+    },
+    loadingContainer: {
+        position:'absolute',
+        width:'100%',
+        height:'100%',
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0,0,0,0.5)", // 반투명한 회색 배경
+        zIndex: 10
     }
 })
 export default WifiModalComponent;

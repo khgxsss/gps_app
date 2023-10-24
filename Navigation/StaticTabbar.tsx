@@ -11,6 +11,7 @@ import {
   BackHandler,
   Alert,
 } from 'react-native';
+import showExitAlert from '../Components/ExitApp';
 import { useAuth } from './AuthContext';
 
 import { TabsType } from './TabBar';
@@ -70,22 +71,7 @@ const StaticTabbar: React.FC<Props> = ({
         return true; // 이벤트를 소비하여 앱이 종료되지 않게 합니다.
       }else {
         // 탭 히스토리에 1개 이하의 항목이 있을 때 사용자에게 앱을 종료할 것인지 물어봅니다.
-        Alert.alert(
-            "Exit App",
-            "Do you want to exit the app?",
-            [
-                {
-                    text: "No",
-                    onPress: () => null,
-                    style: "cancel"
-                },
-                {
-                    text: "Yes",
-                    onPress: () => BackHandler.exitApp()
-                }
-            ],
-            { cancelable: true }
-        );
+        showExitAlert()
         return true;
       }
     };
