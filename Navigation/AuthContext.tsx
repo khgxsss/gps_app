@@ -3,6 +3,7 @@ import Auth, { AuthEventEmitter, AuthEvents, User } from 'react-native-firebaseu
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import { Coord } from 'react-native-nmap-fork1';
 import { useSafeAreaFrame } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AuthContextType {
     activeTab: string;
@@ -173,6 +174,17 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
   }, [appDimensionCache, appDimension]);
 
   useEffect(() => {
+    const loadUser = async () => {
+      const storedUser = await AsyncStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    };
+  
+    loadUser();
+  }, []);  
+
+  useEffect(() => {
 
     const eventListener = AuthEventEmitter.addListener(
       AuthEvents.AUTH_STATE_CHANGED,
@@ -198,6 +210,9 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
     try {
       const signedInUser = await Auth.signIn(config);
       setUser(signedInUser);
+
+      // 로그인 성공 후 토큰 저장
+      await AsyncStorage.setItem('user', JSON.stringify(signedInUser));
   
       // Firestore에서 사용자 확인
       const userDocRef = firestore().collection('users').doc(signedInUser.uid);
@@ -232,6 +247,8 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
       await Auth.signOut();
       setUser(default_user); // After signing out, set the user to an empty string
       setActiveTab('Map')
+      // 로그아웃 시 토큰 제거
+      await AsyncStorage.removeItem('user');
     } catch (error) {
       console.error(error);
     }

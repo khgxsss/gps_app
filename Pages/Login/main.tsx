@@ -5,7 +5,7 @@ import { useAuth } from '../../Navigation/AuthContext';
 
 const LoginComponent = () => {
 
-  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory } = useAuth();
+  const { user, handleSignIn } = useAuth();
   if (!user.uid) {
     return (
       <View style={styles.container}>
@@ -21,14 +21,14 @@ const LoginComponent = () => {
           >
             <Text style={styles.buttonText}>LOGIN</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.buttonContainer}
             onPress={() => {
               setActiveTab("Map");
             }}
           >
             <Text style={styles.buttonText}>SIGN UP</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         </ImageBackground>
       </View>

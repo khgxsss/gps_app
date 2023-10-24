@@ -257,7 +257,7 @@ const MapComponent = () => {
                 scaleBar={true}
                 nightMode={false}
                 zoomControl={true}
-                logoMargin={{left: -50}}
+                // logoMargin={{left: -50}} 네이버 맵 정책으로 반드시 보여야 함
                 mapType={mapType}
                 style={{ height:"100%" }}
                 center={locationSaved ? {latitude: locationSaved.latitude, longitude:locationSaved.longitude, zoom: locationSaved.mapZoomLevel}:{latitude: 37.35882350130591, longitude: 127.10469231924353, zoom: 13}}
