@@ -34,7 +34,7 @@ const WifiModalComponent: React.FC = () => {
             .catch((error) => {
             console.log("Cannot get current SSID", error);
             });
-    }, []);
+    }, [wifiList]);
 
     useEffect(() => {
         const enableWifi = async () => {
@@ -51,7 +51,9 @@ const WifiModalComponent: React.FC = () => {
     const fetchWifiList = async () => {
         setLoading(true);
         try {
-            const list:WifiEntry[] = await WifiManager.loadWifiList();
+            let list:WifiEntry[] = await WifiManager.loadWifiList();
+            // Hidden SSID 제외
+            list = list.filter(wifi => wifi.SSID && wifi.SSID.trim() !== '(hidden SSID)');
             setWifiList(list);
             setLoading(false);
         } catch (e) {
@@ -63,7 +65,9 @@ const WifiModalComponent: React.FC = () => {
     const reFetchWifiList = async () => {
         setLoading(true);
         try {
-            const list:WifiEntry[] = await WifiManager.reScanAndLoadWifiList();
+            let list:WifiEntry[] = await WifiManager.reScanAndLoadWifiList();
+            // Hidden SSID 제외
+            list = list.filter(wifi => wifi.SSID && wifi.SSID.trim() !== '(hidden SSID)');
             setWifiList(list);
             setLoading(false);
         } catch (e) {
@@ -89,7 +93,19 @@ const WifiModalComponent: React.FC = () => {
           console.error(e);
         }
         setLoading(false);
+        reFetchWifiList()
     };
+
+    const getWifiSecurity = (capabilities: string) => {
+        const securityKeys = ['WPA', 'WEP', 'EAP'];
+        const securityType = securityKeys.find(key => capabilities.includes(key));
+        return securityType || 'None'; // None을 반환하는 것은 해당 Wi-Fi가 보안이 설정되어 있지 않음을 의미합니다.
+    }
+
+    const hasWifiSecurity = (capabilities: string) => {
+        const securityKeys = ['WPA', 'WEP', 'EAP'];
+        return securityKeys.some(key => capabilities.includes(key));
+    }
 
     return (
         <Modal
@@ -132,21 +148,25 @@ const WifiModalComponent: React.FC = () => {
                                     setShowPasswordModal(true);
                                     }}
                                 >
-                                    <Text style={{color:wifi.SSID === connectedWifi ? Theme.COLORS.WHITE : undefined}}>{' '+wifi.SSID}</Text>
+                                    <Text style={{color:wifi.SSID === connectedWifi ? Theme.COLORS.WHITE : Theme.COLORS.BLACK}}>{' '+wifi.SSID}</Text>
                                     <MaterialCommunityIcons 
                                         name={getWifiStrengthIcon(wifi.level)}
                                         size={24}
-                                        color={wifi.SSID === connectedWifi ? Theme.COLORS.WHITE : undefined}
+                                        color={wifi.SSID === connectedWifi ? Theme.COLORS.WHITE : Theme.COLORS.BLACK}
                                     />
                                 </TouchableOpacity>
                             ))
                         }
-                        <TouchableOpacity 
-                            onPress={fetchWifiList} 
-                            style={styles.refreshButton}
-                        ><MaterialCommunityIcons name="sync-circle" color={Theme.COLORS.WARNING} size={50}/></TouchableOpacity>
                         </TouchableOpacity>
                     </ScrollView>
+                    <TouchableOpacity 
+                            onPress={reFetchWifiList} 
+                            style={styles.refreshButton}
+                    ><MaterialCommunityIcons name="sync-circle" color={Theme.COLORS.PRIMARY} size={50}/></TouchableOpacity>
+                    <TouchableOpacity 
+                            onPress={()=>setWifiModalVisible(false)} 
+                            style={styles.closeButton}
+                    ><MaterialCommunityIcons name="close-box" color={Theme.COLORS.PRIMARY} size={50}/></TouchableOpacity>
                     <Modal
                         transparent={true}
                         animationType="fade"
@@ -160,14 +180,16 @@ const WifiModalComponent: React.FC = () => {
                             activeOpacity={1}
                         >
                             <View style={styles.modalView2}>
-                                <Text>{selectedWifi?.SSID}</Text>
-                                <Text style={{backgroundColor:Theme.COLORS.WHITE}}>{'\n'}Please type WIFI Password{'\n'}</Text>
+                                <Text style={{color:Theme.COLORS.PRIMARY, marginBottom:20, fontWeight:'bold'}}>{selectedWifi?.SSID}</Text>
+                                <Text style={{color:Theme.COLORS.BLACK, marginBottom:20}}>Wifi Security: {selectedWifi && getWifiSecurity(selectedWifi.capabilities)}</Text>
                                 {
-                                    selectedWifi && selectedWifi.capabilities && (
+                                    selectedWifi && hasWifiSecurity(selectedWifi.capabilities) && (
                                         <>
+                                            <Text style={{backgroundColor:Theme.COLORS.WHITE, color:Theme.COLORS.BLACK}}>{'\n'}Please type WIFI Password{'\n'}</Text>
                                             <View style={{height:1, backgroundColor:'#000'}}></View>
                                             <TextInput
                                                 placeholder="Input Password here"
+                                                placeholderTextColor={Theme.COLORS.DEFAULT}
                                                 value={password}
                                                 onChangeText={setPassword}
                                             />
@@ -175,8 +197,8 @@ const WifiModalComponent: React.FC = () => {
                                     )
                                 }
                                 <View style={{height:1, backgroundColor:'#000', marginBottom: 40}}></View>
-                                <TouchableOpacity style={styles.modalView2Button} onPress={connectToWifi} ><Text>Confirm</Text></TouchableOpacity>
-                                <TouchableOpacity style={styles.modalView2Button} onPress={() => setShowPasswordModal(false)} ><Text>Cancel</Text></TouchableOpacity>
+                                <TouchableOpacity style={styles.modalView2Button} onPress={connectToWifi} ><Text style={{color:Theme.COLORS.BLACK, fontWeight:'bold'}}>Confirm</Text></TouchableOpacity>
+                                <TouchableOpacity style={styles.modalView2Button} onPress={() => {setShowPasswordModal(false);reFetchWifiList()}} ><Text style={{color:Theme.COLORS.BLACK}}>Cancel</Text></TouchableOpacity>
                             </View>
                         </TouchableOpacity>
                     </Modal>
@@ -216,12 +238,19 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         margin: 10,
         marginLeft: '20%',
-        marginRight: '20%',
+        marginRight: '10%',
         padding: 4,
         flexDirection: 'row'
     },
     refreshButton: {
         position:'absolute',
+        top: 20,
+        left: 20
+    },
+    closeButton: {
+        position:'absolute',
+        top: 20,
+        right: 20
     },
     modalContainer2: {
         flex: 1,

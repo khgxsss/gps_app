@@ -20,14 +20,17 @@ const MapSettingsModalComponent: React.FC = () => {
             >
             <TouchableOpacity
                 style={styles.modalContainer}
-                activeOpacity={1}
-            >
+                activeOpacity={1}>
+                <TouchableOpacity 
+                    onPress={()=>setMapSettingsModalVisible(false)} style={styles.closeButton}
+                ><MaterialCommunityIcons name="close-box" color={Theme.COLORS.PRIMARY} size={50}/></TouchableOpacity>
                 <View style={styles.modalView}>
                     <ReactNativeSettingsPage>
                         <SectionRow text='Map Settings'>
                             <SwitchRow 
                                 text='See all device ids' 
                                 iconName='eye'
+                                iconCOlor='#000'
                                 _value={seeAllDevices}
                                 _onValueChange={() => {setSeeAllDevices(!seeAllDevices)}} />
                             <SwitchRow 
@@ -103,7 +106,12 @@ const styles = StyleSheet.create({
           height: 2,
         },
         shadowOpacity: 0.25,
-        shadowRadius: 4,
+        shadowRadius: 4
+    },
+    closeButton: {
+        position:'absolute',
+        top: 20,
+        right: 20
     }
 })
 export default MapSettingsModalComponent;
