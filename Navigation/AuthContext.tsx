@@ -178,6 +178,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
       const storedUser = await AsyncStorage.getItem('user');
       if (storedUser) {
         setUser(JSON.parse(storedUser));
+        await updateFirebaseStorage(JSON.parse(storedUser));
       }
     };
   
@@ -206,6 +207,31 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
     privacyPolicyUrl: 'https://example.com/privacypolicy.htm',
   };
 
+  const updateFirebaseStorage = async (userData:User) => {
+    // Firestore에서 사용자 확인
+    const userDocRef = firestore().collection('users').doc(userData.uid);
+  
+    const userDoc = await userDocRef.get();
+
+    // 사용자가 데이터베이스에 없으면 추가, 있으면 타임스탬프, Map Zoom 갱신
+    if (!userDoc.exists) {
+      await userDocRef.set({
+        about: '', // 기본값으로 빈 문자열 사용
+        devices: [], // 기본값으로 빈 배열 사용
+        name: userData.displayName || '',
+        email: userData.email,
+        lastSignInTimestamp: userData.lastSignInTimestamp,
+        lastLocation: {latitude: 37.35882350130591, longitude: 127.10469231924353, mapZoomLevel: 13}
+      });
+    }else {
+      await userDocRef.update({
+        lastSignInTimestamp: userData.lastSignInTimestamp,
+      });
+    }
+    setLocationSaved(userDoc.data()?.lastLocation)
+    setDefaultMapZoomLevel(userDoc.data()?.lastLocation.mapZoomLevel)
+  }
+
   const handleSignIn = async () => {
     try {
       const signedInUser = await Auth.signIn(config);
@@ -213,30 +239,7 @@ export const AuthProvider = ({children}:AuthProviderProps) => {
 
       // 로그인 성공 후 토큰 저장
       await AsyncStorage.setItem('user', JSON.stringify(signedInUser));
-  
-      // Firestore에서 사용자 확인
-      const userDocRef = firestore().collection('users').doc(signedInUser.uid);
-  
-      const userDoc = await userDocRef.get();
-  
-      // 사용자가 데이터베이스에 없으면 추가, 있으면 타임스탬프, Map Zoom 갱신
-      if (!userDoc.exists) {
-        await userDocRef.set({
-          about: '', // 기본값으로 빈 문자열 사용
-          devices: [], // 기본값으로 빈 배열 사용
-          name: signedInUser.displayName || '',
-          email: signedInUser.email,
-          lastSignInTimestamp: signedInUser.lastSignInTimestamp,
-          lastLocation: {latitude: 37.35882350130591, longitude: 127.10469231924353, mapZoomLevel: 13}
-        });
-      }else {
-        await userDocRef.update({
-          lastSignInTimestamp: signedInUser.lastSignInTimestamp,
-        });
-      }
-      setLocationSaved(userDoc.data()?.lastLocation)
-      setDefaultMapZoomLevel(userDoc.data()?.lastLocation.mapZoomLevel,)
-  
+      await updateFirebaseStorage(signedInUser);
     } catch (err) {
       console.log(err);
     }
