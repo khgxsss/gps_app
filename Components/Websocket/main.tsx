@@ -40,9 +40,17 @@ const WebSocketComponent = () => {
         });
     
         socket.on('message', (msg, rinfo) => {
+          if (msg.length < 2) {
+            console.error("네트워크가 불안정합니다. bouyCount가 없습니다.");
+            return;
+          }
           const buoyCount = msg[1];
-          // const buoys:DeviceDataType[] = [];
-          const buoys:DeviceDataType[] = fetchedWData ? [...fetchedWData] : [];
+          const expectedMsgLength = 2 + buoyCount * 20; // 기본 2바이트 + buoyCount에 따른 예상 길이
+          // 실제 메시지 길이와 예상 길이를 비교
+          if (msg.length !== expectedMsgLength) {
+            console.error("네트워크가 불안정합니다. 예상된 데이터 길이와 일치하지 않습니다.");
+            return;
+          }
       
           for (let i = 0; i < buoyCount; i++) {
             const offset = 2 + i * 20;
@@ -100,17 +108,6 @@ const WebSocketComponent = () => {
     }, []);
     
     return (
-        // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        //   {fetchedWData && fetchedWData.map((buoy, idx) => (
-        //     <View key={idx} style={{ marginBottom: 10 }}>
-        //       <Text>ID: {buoy.buoy_id}</Text>
-        //       <Text>Location: {buoy.location.latitude}N, {buoy.location.longitude}E</Text>
-        //       <Text>Date: {buoy.time_generation.year}-{buoy.time_generation.month}-{buoy.time_generation.day}-{buoy.time_generation.hours}:{buoy.time_generation.minutes}:{buoy.time_generation.seconds}</Text>
-        //       <Text>DateTime: {buoy.time_generation.time}</Text>
-        //       <Text>Status: {buoy.status}</Text>
-        //     </View>
-        //   ))}
-        // </View>
         <></>
     );
 };
