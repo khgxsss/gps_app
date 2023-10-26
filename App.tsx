@@ -2,11 +2,14 @@ import React, { useEffect } from 'react';
 import {
   Alert,
   BackHandler,
+  Button,
   Dimensions,
   Linking,
+  Modal,
   Platform,
   StatusBar,
   StyleSheet,
+  Text,
   useColorScheme,
   View,
 } from 'react-native';
@@ -28,48 +31,39 @@ import LoaderComponent from './Components/Loader';
 
 function App(): JSX.Element {
 
-  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory, loading, setLoading, cellularOn, setCellularOn, wifiOn, setWifiOn, appDimension } = useAuth();
-  
+  const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory, loading, setLoading, cellularOn, setCellularOn, wifiOn, setWifiOn, appDimension, isWifiModalVisible } = useAuth();
+  const [isModalVisible, setModalVisible] = React.useState(false);
+
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
-        if (state.isInternetReachable) {
-          switch (state.type) {
-            case 'wifi':
-              setWifiOn(true)
-              setCellularOn(false)
-              break
-            case 'cellular':
-              setCellularOn(true)
-              setWifiOn(false)
-              break
-            default:
-              break;
-          }
-        }else {
-          setWifiOn(false)
-          setCellularOn(false)
-          Alert.alert(
-            "Needs Internet Connection",
-            "Please turn on Cellular data or Wifi.",
-            [{ text: "go to Settings Page",
-            onPress: () => {
-              if (Platform.OS === 'ios') {
-                  // iOS 설정 화면으로 이동
-                  Linking.openURL('app-settings:');
-              } else {
-                // 안드로이드 Wi-Fi 설정 화면으로 이동
-                IntentLauncher.startActivity({
-                    action: 'android.settings.WIFI_SETTINGS',
-                });
-              }
-            } },{
-              text: 'Ok',
-              onPress: () => {
-              }
-            }],
-            { cancelable: false }
-          );
+      if (state.isInternetReachable) {
+        setModalVisible(false);
+        switch (state.type) {
+          case 'wifi':
+            setWifiOn(true)
+            setCellularOn(false)
+            break
+          case 'cellular':
+            setCellularOn(true)
+            setWifiOn(false)
+            break
+          default:
+            setCellularOn(false)
+            setWifiOn(false)
+            break;
         }
+      }else {
+        setWifiOn(false)
+        setCellularOn(false)
+        setModalVisible(true);
+      }
+      if (isWifiModalVisible) {
+        if (state.type !== 'wifi') {
+          setModalVisible(true);
+        }else {
+          setModalVisible(false)
+        }
+      }
     });
 
     // 컴포넌트 언마운트 시 이벤트 리스너 제거
@@ -77,6 +71,18 @@ function App(): JSX.Element {
         unsubscribe();
     };
   }, []);
+
+  const handleOpenSettings = () => {
+    if (Platform.OS === 'ios') {
+        // iOS 설정 화면으로 이동
+        Linking.openURL('app-settings:');
+    } else {
+      // 안드로이드 Wi-Fi 설정 화면으로 이동
+      IntentLauncher.startActivity({
+          action: 'android.settings.WIFI_SETTINGS',
+      });
+    }
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -96,6 +102,19 @@ function App(): JSX.Element {
   return (
     <View style={{...styles.safeAreaView, height: appDimension.appHeight}}>
       <WebSocketComponent/>
+      <Modal
+          visible={isModalVisible}
+          transparent={true}
+          animationType="slide"
+      >
+          <View style={{ width:'100%', height:'100%', position:'absolute', justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,0.5)' }}>
+              <View style={{ width: 300, padding: 20, backgroundColor: 'white', borderRadius: 10 }}>
+                  <Text>{!isWifiModalVisible ? 'Needs Internet Connection':'Needs wifi Connection'}</Text>
+                  <Text>{!isWifiModalVisible ? 'Please turn on Cellular data or Wifi.':'Please turn on Wifi.'}{'\n'}</Text>
+                  <Button title="Go to Settings" onPress={handleOpenSettings} color={Theme.COLORS.BUTTON_COLOR}/>
+              </View>
+          </View>
+      </Modal>
       <LoginComponent/>
       {/* {loading ? <LoaderComponent/>:<></> } */}
       {

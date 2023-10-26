@@ -12,7 +12,7 @@ import WifiManager, { WifiEntry, WiFiObject } from 'react-native-wifi-reborn';
 
 const WifiModalComponent: React.FC = () => {
 
-    const { activeTab, setActiveTab, fetchedWData, setFetchedWData, mapType, setMapType, user, setUser, handleSignIn, handleSignOut, MAP_TYPE, tabHistory, setTabHistory,  isWifiModalVisible, setWifiModalVisible, loading, setLoading  } = useAuth();
+    const { isWifiModalVisible, setWifiModalVisible, loading, setLoading  } = useAuth();
     const [wifiList, setWifiList] = useState<WifiEntry[]>([]);
     const [selectedWifi, setSelectedWifi] = useState<WiFiObject>();
     const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -122,8 +122,8 @@ const WifiModalComponent: React.FC = () => {
                         style={styles.loadingContainer}
                         activeOpacity={1}
                     >
-                    <ProgressCircle color={'green'} showsText={true}/>
-                        <Text>Loading...</Text>
+                    <ProgressCircle color={'green'} showsText={false} indeterminate={true} size={50}/>
+                    <Text style={{color:Theme.COLORS.WHITE}}>Loading...</Text>
                     </TouchableOpacity>
                 )
             }
@@ -237,20 +237,19 @@ const styles = StyleSheet.create({
         borderColor: Theme.COLORS.PRIMARY,
         borderWidth: 2,
         margin: 10,
-        marginLeft: '20%',
-        marginRight: '10%',
+        marginLeft: '15%',
         padding: 4,
         flexDirection: 'row'
     },
     refreshButton: {
         position:'absolute',
-        top: 20,
+        top: 80,
         left: 20
     },
     closeButton: {
         position:'absolute',
         top: 20,
-        right: 20
+        left: 20
     },
     modalContainer2: {
         flex: 1,
@@ -261,8 +260,8 @@ const styles = StyleSheet.create({
     modalView2: {
         justifyContent: 'center',
         alignContent:'center',
-        width: "50%",
-        height: "30%",
+        width: "80%",
+        height: "50%",
         padding: 20,
         backgroundColor: "white",
         borderRadius: 10,

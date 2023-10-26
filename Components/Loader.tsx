@@ -7,13 +7,11 @@ import ProgressCircle from 'react-native-progress/Circle';
 
 const LoaderComponent: React.FC = () => {
     return (
-        <TouchableOpacity
-                style={styles.bgContainer}
-                activeOpacity={1}
+        <View style={styles.bgContainer}
         >
-            <ProgressCircle color={'green'} showsText={true}/>
-            <Text>Loading...</Text>
-        </TouchableOpacity>
+            <ProgressCircle color={'green'} showsText={false} indeterminate={true}/>
+            <Text style={{color:Theme.COLORS.WHITE}}>Loading...</Text>
+        </View>
     )
 }
 
