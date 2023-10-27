@@ -27,7 +27,6 @@ import LoginComponent from './Pages/Login/main';
 import ProfileComponent from './Pages/Profile/main';
 import WebSocketComponent from './Components/Websocket/main';
 import Theme from './Constants/Theme';
-import LoaderComponent from './Components/Loader';
 
 function App(): JSX.Element {
 
@@ -116,7 +115,6 @@ function App(): JSX.Element {
           </View>
       </Modal>
       <LoginComponent/>
-      {/* {loading ? <LoaderComponent/>:<></> } */}
       {
         user.uid ? (
           <>
